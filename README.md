@@ -18,7 +18,7 @@ Please note the following:
 To set up an Android dev environment for the biometric app, do the following:
 
 - Install [Android Studio](https://developer.android.com/sdk/index.html).
-- Install Java 17 if you don't have it yet. For ease of test suite setup OpenJDK is preferred over Oracle's version of Java.
+- Install Java 18 if you don't have it yet. For ease of test suite setup OpenJDK is preferred over Oracle's version of Java.
 
 ### [](https://github.com/dimagi/biometric-android#dependencies)Dependencies
 
