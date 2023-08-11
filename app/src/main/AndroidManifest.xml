@@ -18,7 +18,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Biometric"
-        tools:targetApi="31">
+        tools:targetApi="33">
         <activity
             android:name="com.dimagi.biometric.activities.VerifyActivity"
             android:exported="true"
@@ -34,7 +34,7 @@
             android:name="com.dimagi.biometric.activities.EnrollActivity"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.digitalid.omnimatch.ENROLL" />
+                <action android:name="com.dimagi.biometric.ENROLL" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -42,7 +42,7 @@
             android:name="com.dimagi.biometric.activities.SearchActivity"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.digitalid.omnimatch.SEARCH" />
+                <action android:name="com.dimagi.biometric.SEARCH" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
