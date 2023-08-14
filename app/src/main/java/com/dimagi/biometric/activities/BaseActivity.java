@@ -12,7 +12,14 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import com.dimagi.biometric.Constants;
 import com.dimagi.biometric.fragments.FaceMatchFragment;
 import com.dimagi.biometric.fragments.FingerMatchFragment;
 import com.dimagi.biometric.viewmodels.BaseTemplateViewModel;
@@ -24,6 +31,7 @@ import com.dimagi.biometric.R;
 import org.commcare.commcaresupportlibrary.identity.model.MatchStrength;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import Tech5.OmniMatch.BioCommon;
@@ -45,6 +53,12 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
+
+        Button retryButton = findViewById(R.id.retry_init_button);
+        retryButton.setOnClickListener(v -> {
+            toggleRetryButton(false);
+            licenseViewModel.initSDK(this);
+        });
 
         getIntentParams();
         initTemplateViewModel();
@@ -90,21 +104,33 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private void initLicenseViewModel() {
         licenseViewModel = new ViewModelProvider(BaseActivity.this).get(LicenseViewModel.class);
-        licenseViewModel.isSDKInitialized().observe(BaseActivity.this, isSdkInitialized -> {
-            if (!isSdkInitialized) {
+        licenseViewModel.getStatusMessage().observe(BaseActivity.this, message -> {
+            if (message == null) {
                 return;
             }
-            templateViewModel.init();
-
-            // If SDK is initialized, then start up appropriate fragment
-            setContentView(R.layout.activity_main);
-            Fragment matchFragment;
-            if (biometricType == BioCommon.BioType.Face) {
-                matchFragment = new FaceMatchFragment();
-            } else {
-                matchFragment = new FingerMatchFragment();
+            TextView textStatus = findViewById(R.id.txt_status);
+            if (textStatus != null) {
+                textStatus.setText(message);
             }
-            loadFragment(matchFragment);
+        });
+
+        licenseViewModel.getStatus().observe(this, status -> {
+            if (status == Constants.initStatus.SUCCESS) {
+                templateViewModel.init();
+
+                // If SDK is initialized, then start up appropriate fragment
+                setContentView(R.layout.activity_main);
+                Fragment matchFragment;
+                if (biometricType == BioCommon.BioType.Face) {
+                    matchFragment = new FaceMatchFragment();
+                } else {
+                    matchFragment = new FingerMatchFragment();
+                }
+                loadFragment(matchFragment);
+            }
+            else if (status == Constants.initStatus.FAIL || status == Constants.initStatus.NO_NETWORK) {
+                toggleRetryButton(true);
+            }
         });
 
         licenseViewModel.initSDK(BaseActivity.this);
@@ -135,6 +161,22 @@ public abstract class BaseActivity extends AppCompatActivity {
             return templateViewModel.createRecord(templateList);
         }
         return null;
+    }
+
+    private void toggleRetryButton(boolean isVisible) {
+        Button retryButton = findViewById(R.id.retry_init_button);
+        ProgressBar progressBar = findViewById(R.id.progress_circular);
+        if (retryButton == null || progressBar == null) {
+            return;
+        }
+
+        if (isVisible) {
+            retryButton.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+        } else {
+            retryButton.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
+        }
     }
 }
 
