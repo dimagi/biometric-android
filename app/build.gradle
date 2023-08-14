@@ -75,7 +75,7 @@ dependencies {
 
     implementation(project(path: ':AirsnapFaceCore'))
     implementation(project(path: ':AirsnapFaceUI'))
-    implementation(project(path: ':AirsnapFingerCore'))
+    implementation(project(path: ':AirsnapFinger'))
     implementation(project(path: ':AirsnapFingerUI'))
     implementation(project(path: ':OmniMatch'))
 }
