@@ -5,8 +5,11 @@
     <string name="cancel_capture">Cancel</string>
 
     <string name="omnimatch_initializing">Initializing OmniMatch</string>
+    <string name="omnimatch_failed">Failed to initialize OmniMatch</string>
+    <string name="connection_failed">No network available to initialize OmniMatch license</string>
     <string name="camera_permission_rationale">This app requires the Camera permission in order to be able to capture biometrics.</string>
     <string name="camera_permission_required">Camera permission required</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
+    <string name="retry">Retry</string>
 </resources>
