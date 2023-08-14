@@ -10,6 +10,7 @@ import android.Manifest;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -31,6 +32,15 @@ public abstract class BaseMatchFragment extends Fragment {
     private static final String TAG = "BIOMETRIC";
 
     private final String PREV_RATIONALE_KEY = "prev_rationale";
+    private final String DIALOG_STATE_KEY = "dialog_state";
+
+    private DialogState dialogState = DialogState.NONE;
+
+    private enum DialogState {
+        NONE,
+        RATIONALE,
+        SETTINGS
+    }
 
     protected abstract void handleStartCapture();
     protected abstract void handleCancelCapture();
@@ -58,6 +68,9 @@ public abstract class BaseMatchFragment extends Fragment {
         });
         Button cancelButton = view.findViewById(R.id.cancel_capture_button);
         cancelButton.setOnClickListener(v -> handleCancelCapture());
+        if (savedInstanceState != null) {
+            restoreDialog(savedInstanceState);
+        }
         return view;
     }
 
@@ -71,15 +84,19 @@ public abstract class BaseMatchFragment extends Fragment {
     });
 
     private void showPermissionAlertDialog() {
+        dialogState = DialogState.RATIONALE;
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(requireContext());
         alertDialogBuilder.setTitle(getText(R.string.camera_permission_required));
         alertDialogBuilder.setMessage(getText(R.string.camera_permission_rationale));
         alertDialogBuilder.setPositiveButton(getText(R.string.confirm), (dialog, which) -> requestPermissionLauncher.launch(Manifest.permission.CAMERA));
         alertDialogBuilder.setNegativeButton(getText(R.string.cancel), null);
-        alertDialogBuilder.create().show();
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.setOnDismissListener((dialog) -> dialogState = DialogState.NONE);
+        alertDialog.show();
     }
 
     private void requestOpenAppSettings() {
+        dialogState = DialogState.SETTINGS;
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(requireContext());
         alertDialogBuilder.setTitle(getText(R.string.go_to_settings));
         alertDialogBuilder.setMessage(getText(R.string.camera_permission_settings));
@@ -92,7 +109,9 @@ public abstract class BaseMatchFragment extends Fragment {
             requireContext().startActivity(intent);
         });
         alertDialogBuilder.setNegativeButton(getText(R.string.cancel), null);
-        alertDialogBuilder.create().show();
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.setOnDismissListener((dialog) -> dialogState = DialogState.NONE);
+        alertDialog.show();
     }
 
     protected void handleErrorMessage(String error) {
@@ -121,5 +140,23 @@ public abstract class BaseMatchFragment extends Fragment {
         boolean prevRationale = sharedPref.getBoolean(PREV_RATIONALE_KEY, false);
         boolean hasRationale = shouldShowRequestPermissionRationale(Manifest.permission.CAMERA);
         return !hasRationale && prevRationale;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(DIALOG_STATE_KEY, dialogState);
+    }
+
+    private void restoreDialog(Bundle savedInstanceState) {
+        dialogState = (DialogState)savedInstanceState.getSerializable(DIALOG_STATE_KEY);
+        if (dialogState == null) {
+            return;
+        }
+        if (dialogState == DialogState.RATIONALE) {
+            showPermissionAlertDialog();
+        } else if (dialogState == DialogState.SETTINGS) {
+            requestOpenAppSettings();
+        }
     }
 }

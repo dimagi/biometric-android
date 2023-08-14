@@ -4,7 +4,7 @@ import static com.dimagi.biometric.Constants.BIOMETRIC_TYPE_PARAM;
 import static com.dimagi.biometric.Constants.CASE_ID_PARAM;
 import static com.dimagi.biometric.Constants.TEMPLATE_PARAM;
 
-
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -31,7 +30,6 @@ import com.dimagi.biometric.R;
 import org.commcare.commcaresupportlibrary.identity.model.MatchStrength;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import Tech5.OmniMatch.BioCommon;
@@ -43,6 +41,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected BioCommon.BioType biometricType;
     protected String caseId;
 
+    final private String MATCH_FRAGMENT_TAG = "matchFragment";
+
     private LicenseViewModel licenseViewModel;
     protected BaseTemplateViewModel templateViewModel;
 
@@ -52,8 +52,15 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.splash);
+        if (savedInstanceState != null) {
+            Fragment frag = getSupportFragmentManager().findFragmentByTag(MATCH_FRAGMENT_TAG);
+            if (frag != null) {
+                restoreState(savedInstanceState);
+                return;
+            }
+        }
 
+        setContentView(R.layout.splash);
         Button retryButton = findViewById(R.id.retry_init_button);
         retryButton.setOnClickListener(v -> {
             toggleRetryButton(false);
@@ -67,7 +74,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void loadFragment(Fragment fragment) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.mainContainer, fragment);
+        ft.add(R.id.mainContainer, fragment, MATCH_FRAGMENT_TAG);
         ft.commit();
     }
 
@@ -177,6 +184,20 @@ public abstract class BaseActivity extends AppCompatActivity {
             retryButton.setVisibility(View.GONE);
             progressBar.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(CASE_ID_PARAM, caseId);
+        outState.putSerializable(BIOMETRIC_TYPE_PARAM, biometricType);
+    }
+
+    private void restoreState(Bundle savedInstanceState) {
+        setContentView(R.layout.activity_main);
+        caseId = savedInstanceState.getString(CASE_ID_PARAM);
+        biometricType = (BioCommon.BioType)savedInstanceState.getSerializable(BIOMETRIC_TYPE_PARAM);
+        initTemplateViewModel();
     }
 }
 
