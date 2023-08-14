@@ -47,11 +47,13 @@ public abstract class BaseMatchFragment extends Fragment {
             if (ContextCompat.checkSelfPermission(
                     requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                 handleStartCapture();
-            } else if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                savePreviousRationale();
-                showPermissionAlertDialog();
             } else {
-                requestPermissionLauncher.launch(Manifest.permission.CAMERA);
+                if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                    savePreviousRationale();
+                }
+                if (!isPermissionDeniedPermanently()) {
+                    showPermissionAlertDialog();
+                }
             }
         });
         Button cancelButton = view.findViewById(R.id.cancel_capture_button);
