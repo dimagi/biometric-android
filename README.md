@@ -11,6 +11,14 @@ Please note the following:
 - The biometric application will require an Internet connection the first time it is opened. This is to retrieve the Tech5 license. Thereafter, the biometric application is capable of running in an offline state.
 - The biometric application is reliant on CommCare making the necessary app callout and passing in the required input parameters. As such, the biometric app is currently not functional as an independent app and should be started from CommCare.
 
+## Code Structure
+
+There are three main activities for carrying out the different workflows. Specifically, these are the `EnrollActivity`, `VerifyActivity`, and `SearchActivity` classes. These three activities all inherit from the `BaseActivity` class, which holds shared functionality for setting up the activities (such as initializing the Tech5 SDK license and creating the relevant fragment). The sub-class activities themselves only contain code necessary for handling the captured biometric data and returning the relevant data back to CommCare, based on the selected workflow.
+
+For the UI component, two fragments, `FaceMatchFragment` and `FingerMatchFragment`, have been created for both face and finger biometric capture, respectively. Both of these fragments inherit from the `BaseMatchFragment` class, which holds common functionality for camera permission checking. These fragments are responsibile for starting the relevant Tech5 capture UI and handling the results of this capture. The latter involves converting the captured image to a record and letting the activity know that the capture was successful.
+
+To faciliate communication between the activities and fragments, view models have been set up for both the face and finger fragments. These view models contain the necessary functions to convert captured images into records, as well as carry out various functions such as inserting or matching records. Both view models inherit from `BaseTemplateViewModel`. This is done so that they can be referenced and used in `BaseActivity` without explicitely knowing whether `FaceMatchViewModel` or `FingerMatchViewModel` was instantiated.
+
 ## Setup
 
 ### Prerequisites
@@ -22,7 +30,7 @@ To set up an Android dev environment for the biometric app, do the following:
 
 ### [](https://github.com/dimagi/biometric-android#dependencies)Dependencies
 
-For the biometric application to work correctly, the necessary Tech5 dependencies will need to be set up first. This will require the following:
+For the biometric application to work correctly, the necessary Tech5 dependencies will need to be set up first. These dependencies are responsible for the capture UI, creating biometric templates, and matching templates with each other. To set up the Tech5 dependencies:
 
 - Download the Tech5 OmniMatch SDK (link available on 1Password under "Tech5 OmniMatch SDK".
 - From the sample app of the downloaded SDK, copy the following folders to the biometric app project's root directory:
