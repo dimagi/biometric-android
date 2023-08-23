@@ -1,0 +1,81 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.dimagi.biometric'
+    compileSdk 33
+
+    defaultConfig {
+        applicationId "com.dimagi.biometric"
+        minSdk 21
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    packagingOptions {
+        pickFirst 'lib/armeabi-v7a/libncnn.so'
+        pickFirst 'lib/arm64-v8a/libncnn.so'
+
+        pickFirst 'lib/armeabi-v7a/libopencv_java4.so'
+        pickFirst 'lib/arm64-v8a/libopencv_java4.so'
+
+        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
+        pickFirst 'lib/arm64-v8a/libc++_shared.so'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    configurations {
+        all {
+            // Dependency conflict with support-library
+            exclude group: "com.android.support", module: "support-core-ui"
+            exclude group: "com.android.support", module: "support-compat"
+        }
+    }
+}
+
+dependencies {
+    constraints {
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0") {
+            because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")
+        }
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0") {
+            because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
+        }
+    }
+
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.navigation:navigation-fragment:2.6.0'
+    implementation 'androidx.navigation:navigation-ui:2.6.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    implementation 'org.commcarehq.commcare:support-library:12.4'
+
+    def camerax_version = '1.2.3'
+    implementation "androidx.camera:camera-core:$camerax_version"
+    implementation "androidx.camera:camera-camera2:$camerax_version"
+    implementation "androidx.camera:camera-lifecycle:$camerax_version"
+    implementation "androidx.camera:camera-view:$camerax_version"
+
+    implementation(project(path: ':AirsnapFaceCore'))
+    implementation(project(path: ':AirsnapFaceUI'))
+    implementation(project(path: ':AirsnapFinger'))
+    implementation(project(path: ':AirsnapFingerUI'))
+    implementation(project(path: ':OmniMatch'))
+}
