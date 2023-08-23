@@ -1,8 +1,5 @@
 package com.dimagi.biometric.activities;
 
-import static com.dimagi.biometric.Constants.BIOMETRIC_TYPE_PARAM;
-import static com.dimagi.biometric.Constants.CASE_ID_PARAM;
-import static com.dimagi.biometric.Constants.TEMPLATE_PARAM;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,13 +9,11 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.dimagi.biometric.Constants;
 import com.dimagi.biometric.fragments.FaceMatchFragment;
 import com.dimagi.biometric.fragments.FingerMatchFragment;
 import com.dimagi.biometric.viewmodels.BaseTemplateViewModel;
@@ -38,10 +33,13 @@ import Tech5.OmniMatch.MatcherCommon;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
+    final protected String CASE_ID_PARAM = "case_id";
+    final protected String BIOMETRIC_TYPE_PARAM = "biometric_type";
+    final protected String TEMPLATE_PARAM = "template";
     protected BioCommon.BioType biometricType;
     protected String caseId;
 
-    final private String MATCH_FRAGMENT_TAG = "matchFragment";
+    private final String MATCH_FRAGMENT_TAG = "matchFragment";
 
     private LicenseViewModel licenseViewModel;
     protected BaseTemplateViewModel templateViewModel;
@@ -122,7 +120,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         });
 
         licenseViewModel.getStatus().observe(this, status -> {
-            if (status == Constants.initStatus.SUCCESS) {
+            if (status == LicenseViewModel.initStatus.SUCCESS) {
                 templateViewModel.init();
 
                 // If SDK is initialized, then start up appropriate fragment
@@ -135,7 +133,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 }
                 loadFragment(matchFragment);
             }
-            else if (status == Constants.initStatus.FAIL || status == Constants.initStatus.NO_NETWORK) {
+            else if (status == LicenseViewModel.initStatus.FAIL || status == LicenseViewModel.initStatus.NO_NETWORK) {
                 toggleRetryButton(true);
             }
         });

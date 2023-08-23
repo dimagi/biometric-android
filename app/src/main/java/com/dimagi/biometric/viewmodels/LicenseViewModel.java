@@ -11,7 +11,6 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.dimagi.biometric.Constants.initStatus;
 import com.dimagi.biometric.R;
 
 import java.io.BufferedInputStream;
@@ -37,6 +36,12 @@ public class LicenseViewModel extends AndroidViewModel {
     private final MutableLiveData<initStatus> status = new MutableLiveData<>();
 
     private final MutableLiveData<String> statusMessage = new MutableLiveData<>();
+
+    public enum initStatus {
+        FAIL,
+        SUCCESS,
+        NO_NETWORK
+    }
 
     public LicenseViewModel(@NonNull Application application) {
         super(application);
