@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Biometric</string>
+    <string name="app_name">Biometric Capture</string>
     <string name="start_capture_title">Start Capture</string>
     <string name="start_capture">Start</string>
     <string name="cancel_capture">Cancel</string>
@@ -8,9 +8,12 @@
     <string name="omnimatch_failed">Failed to initialize OmniMatch</string>
     <string name="omnimatch_version">OmniMatch SDK v:4.5.1</string>
     <string name="connection_failed">No network available to initialize OmniMatch license</string>
-    <string name="camera_permission_rationale">This app requires the Camera permission in order to be able to capture biometrics.</string>
-    <string name="camera_permission_settings">You will need to navigate to the app settings to enable the required Camera permission.</string>
-    <string name="camera_permission_required">Camera permission required</string>
+
+    <string name="permission_rationale">This app requires the Camera and CommCare Read permissions in order to do biometric capture and matching.</string>
+    <string name="permission_settings">You will need to navigate to the app settings to enable the required permissions.</string>
+    <string name="permission_required">Permission required</string>
+    <string name="go_to_settings">Go to settings</string>
+
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
     <string name="retry">Retry</string>

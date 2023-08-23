@@ -86,9 +86,9 @@ public abstract class BaseMatchFragment extends Fragment {
     private void showPermissionAlertDialog() {
         dialogState = DialogState.RATIONALE;
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(requireContext());
-        alertDialogBuilder.setTitle(getText(R.string.camera_permission_required));
-        alertDialogBuilder.setMessage(getText(R.string.camera_permission_rationale));
-        alertDialogBuilder.setPositiveButton(getText(R.string.confirm), (dialog, which) -> requestPermissionLauncher.launch(Manifest.permission.CAMERA));
+        alertDialogBuilder.setTitle(getText(R.string.permission_required));
+        alertDialogBuilder.setMessage(getText(R.string.permission_rationale));
+        alertDialogBuilder.setPositiveButton(getText(R.string.confirm), (dialog, which) -> requestPermissionLauncher.launch(PERMISSIONS));
         alertDialogBuilder.setNegativeButton(getText(R.string.cancel), null);
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.setOnDismissListener((dialog) -> dialogState = DialogState.NONE);
@@ -99,19 +99,21 @@ public abstract class BaseMatchFragment extends Fragment {
         dialogState = DialogState.SETTINGS;
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(requireContext());
         alertDialogBuilder.setTitle(getText(R.string.go_to_settings));
-        alertDialogBuilder.setMessage(getText(R.string.camera_permission_settings));
-        alertDialogBuilder.setPositiveButton(getText(R.string.confirm), (dialogInterface, i) -> {
-            Intent intent = new Intent();
-            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-            intent.addCategory(Intent.CATEGORY_DEFAULT);
-            intent.setData(Uri.parse("package:" + requireContext().getPackageName()));
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            requireContext().startActivity(intent);
-        });
+        alertDialogBuilder.setMessage(getText(R.string.permission_settings));
+        alertDialogBuilder.setPositiveButton(getText(R.string.confirm), (dialogInterface, i) -> navigateToSettings());
         alertDialogBuilder.setNegativeButton(getText(R.string.cancel), null);
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.setOnDismissListener((dialog) -> dialogState = DialogState.NONE);
         alertDialog.show();
+    }
+
+    private void navigateToSettings() {
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+        intent.setData(Uri.parse("package:" + requireContext().getPackageName()));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        requireContext().startActivity(intent);
     }
 
     protected void handleErrorMessage(String error) {
