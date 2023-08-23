@@ -25,13 +25,16 @@ import android.widget.TextView;
 
 import com.dimagi.biometric.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A base class to contain common functionality for both the face and finger match fragments.
  */
 public abstract class BaseMatchFragment extends Fragment {
     private static final String TAG = "BIOMETRIC";
 
-    private final String PREV_RATIONALE_KEY = "prev_rationale";
+    private final String PREV_RATIONALE_KEY = "_prev_rationale";
     private final String DIALOG_STATE_KEY = "dialog_state";
 
     private DialogState dialogState = DialogState.NONE;
@@ -41,6 +44,12 @@ public abstract class BaseMatchFragment extends Fragment {
         RATIONALE,
         SETTINGS
     }
+
+    private final String COMMCARE_READ_PERMISSION = "org.commcare.dalvik.provider.cases.read";
+    private final String[] PERMISSIONS = {
+            Manifest.permission.CAMERA,
+            COMMCARE_READ_PERMISSION
+    };
 
     protected abstract void handleStartCapture();
     protected abstract void handleCancelCapture();
@@ -53,19 +62,7 @@ public abstract class BaseMatchFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_menu, container, false);
         Button startButton = view.findViewById(R.id.start_capture_button);
-        startButton.setOnClickListener(v -> {
-            if (ContextCompat.checkSelfPermission(
-                    requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                handleStartCapture();
-            } else {
-                if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                    savePreviousRationale();
-                }
-                if (!isPermissionDeniedPermanently()) {
-                    showPermissionAlertDialog();
-                }
-            }
-        });
+        startButton.setOnClickListener(v -> handleStartClick());
         Button cancelButton = view.findViewById(R.id.cancel_capture_button);
         cancelButton.setOnClickListener(v -> handleCancelCapture());
         if (savedInstanceState != null) {
@@ -74,12 +71,17 @@ public abstract class BaseMatchFragment extends Fragment {
         return view;
     }
 
-    private final ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-        if (isGranted) {
+    private final ActivityResultLauncher<String[]> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), isGranted -> {
+        if (!isGranted.containsValue(false)) {
             handleStartCapture();
-        } else if (isPermissionDeniedPermanently()) {
-            requestOpenAppSettings();
+        } else {
+            for (String permission : PERMISSIONS) {
+                if (isPermissionDeniedPermanently(permission)) {
+                    requestOpenAppSettings();
+                    break;
+                }
+            }
         }
     });
 
@@ -130,17 +132,19 @@ public abstract class BaseMatchFragment extends Fragment {
      * save that this was true to only show the dialog asking the user to navigate
      * to the app settings after they have denied the permission twice.
      */
-    private void savePreviousRationale() {
+    private void savePreviousRationale(String permission) {
         SharedPreferences sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putBoolean(PREV_RATIONALE_KEY, true);
+        String key = permission + PREV_RATIONALE_KEY;
+        editor.putBoolean(key, true);
         editor.apply();
     }
 
-    private boolean isPermissionDeniedPermanently() {
+    private boolean isPermissionDeniedPermanently(String permission) {
         SharedPreferences sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE);
-        boolean prevRationale = sharedPref.getBoolean(PREV_RATIONALE_KEY, false);
-        boolean hasRationale = shouldShowRequestPermissionRationale(Manifest.permission.CAMERA);
+        String key = permission + PREV_RATIONALE_KEY;
+        boolean prevRationale = sharedPref.getBoolean(key, false);
+        boolean hasRationale = shouldShowRequestPermissionRationale(permission);
         return !hasRationale && prevRationale;
     }
 
@@ -159,6 +163,40 @@ public abstract class BaseMatchFragment extends Fragment {
             showPermissionAlertDialog();
         } else if (dialogState == DialogState.SETTINGS) {
             requestOpenAppSettings();
+        }
+    }
+
+    private List<String> checkPermissions() {
+        List<String> deniedPermissions = new ArrayList<>();
+        for (String permission : PERMISSIONS) {
+            if(ContextCompat.checkSelfPermission(
+                    requireContext(), permission) == PackageManager.PERMISSION_DENIED) {
+                deniedPermissions.add(permission);
+            }
+        }
+        return deniedPermissions;
+    }
+
+    private void handleStartClick() {
+        List<String> deniedPermissions = checkPermissions();
+        if (deniedPermissions.size() == 0) {
+            handleStartCapture();
+        } else {
+            boolean allPermissionsDenied = true;
+            for (String permission : deniedPermissions) {
+                if (shouldShowRequestPermissionRationale(permission)) {
+                    savePreviousRationale(permission);
+                }
+                if (!isPermissionDeniedPermanently(permission)) {
+                    allPermissionsDenied = false;
+                }
+            }
+
+            if (allPermissionsDenied) {
+                requestOpenAppSettings();
+            } else {
+                showPermissionAlertDialog();
+            }
         }
     }
 }
