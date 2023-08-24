@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.dimagi.biometric.OmniMatchUtil;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.io.IOException;
@@ -36,7 +37,6 @@ public class FingerMatchViewModel extends BaseTemplateViewModel {
     private MatcherNative matcherNative = null;
     private MatcherInstance matcherInstance = null;
 
-    private OmniMatchViewModel omniMatchViewModel = null;
 
     public FingerMatchViewModel(@NonNull Application application) {
         super(application);
@@ -73,12 +73,12 @@ public class FingerMatchViewModel extends BaseTemplateViewModel {
             Log.e(TAG, "Failed to init finger view model: " + ex.getResultCode());
         }
 
-        omniMatchViewModel = new OmniMatchViewModel();
+        omniMatchUtil = new OmniMatchUtil();
     }
 
     public void insertRecord(MatcherCommon.Record record, String id) {
         try {
-            omniMatchViewModel.insertRecord(matcherNative, matcherInstance, record, id);
+            omniMatchUtil.insertRecord(matcherNative, matcherInstance, record, id);
         } catch (OmniMatchException ex) {
             Log.e(TAG, "Failed to insert finger record: " + ex.getResultCode());
         }
@@ -87,7 +87,7 @@ public class FingerMatchViewModel extends BaseTemplateViewModel {
     @Override
     public float verifyRecord(MatcherCommon.Record record, String id) {
         try {
-            Matcher.RecordsResult result = omniMatchViewModel.verifyRecord(matcherNative, matcherInstance, record, id);
+            Matcher.RecordsResult result = omniMatchUtil.verifyRecord(matcherNative, matcherInstance, record, id);
             return result.getResultsList().get(0).getCandidate().getScores().getFinger().getScore();
         } catch (OmniMatchException ex) {
             Log.e(TAG, "Failed to verify finger record: " + ex.getResultCode());
@@ -100,7 +100,7 @@ public class FingerMatchViewModel extends BaseTemplateViewModel {
     @Override
     public Matcher.RecordsResult identifyRecord(MatcherCommon.Record record, float threshold, int maxCandidates) {
         try {
-            return omniMatchViewModel.identifyRecord(matcherNative, matcherInstance, record, threshold, maxCandidates);
+            return omniMatchUtil.identifyRecord(matcherNative, matcherInstance, record, threshold, maxCandidates);
         } catch(OmniMatchException ex) {
             Log.e(TAG, "Failed to identify finger record: " + ex.getResultCode());
         } catch (IOException ex) {
@@ -112,7 +112,7 @@ public class FingerMatchViewModel extends BaseTemplateViewModel {
     @Override
     public BioCommon.MatcherTemplate createTemplate(byte[] image, int position, Common.ImageFormat imageFormat) {
         try {
-            return omniMatchViewModel.createFingerTemplate(templateCreatorNNNative, templateCreatorNNInstance, image, position, imageFormat);
+            return omniMatchUtil.createFingerTemplate(templateCreatorNNNative, templateCreatorNNInstance, image, position, imageFormat);
         } catch (OmniMatchException | InvalidProtocolBufferException ex) {
             Log.e(TAG, "Failed to create finger template");
         }
@@ -121,7 +121,7 @@ public class FingerMatchViewModel extends BaseTemplateViewModel {
 
     @Override
     public MatcherCommon.Record createRecord(List<BioCommon.MatcherTemplate> templates) {
-        return omniMatchViewModel.createFingerRecord(templates);
+        return omniMatchUtil.createFingerRecord(templates);
     }
 
     @Override

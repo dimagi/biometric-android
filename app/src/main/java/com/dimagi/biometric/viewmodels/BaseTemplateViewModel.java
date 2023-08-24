@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.dimagi.biometric.OmniMatchUtil;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public abstract class BaseTemplateViewModel extends AndroidViewModel {
 
     public abstract MatcherCommon.Record createRecord(List<BioCommon.MatcherTemplate> templates);
     protected final MutableLiveData<MatcherCommon.Record> activeRecord = new MutableLiveData<>();
-    protected OmniMatchViewModel omniMatchViewModel = null;
+    protected OmniMatchUtil omniMatchUtil = null;
 
     protected final String POS_DELIM = "--";
     protected final String TEMPLATE_DELIM = "---";

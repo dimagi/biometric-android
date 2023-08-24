@@ -1,4 +1,4 @@
-package com.dimagi.biometric.viewmodels;
+package com.dimagi.biometric;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -17,7 +17,7 @@ import Tech5.OmniMatch.Matcher;
 import Tech5.OmniMatch.MatcherCommon;
 import Tech5.OmniMatch.TemplateCreatorCommon;
 
-public class OmniMatchViewModel {
+public class OmniMatchUtil {
 
     private Common.Image deserializeImage(byte[] image, Common.ImageFormat imageFormat, String batchIdentifier) {
         Common.Image.Builder builder = Common.Image.newBuilder();
@@ -31,10 +31,6 @@ public class OmniMatchViewModel {
         ByteString templateBytes = ByteString.copyFrom(templateData);
         BioCommon.Template template = BioCommon.Template.newBuilder().setData(templateBytes).setQuality(100).build();
         return createMatcherTemplate(template, position);
-    }
-
-    public byte[] templateToBytes(BioCommon.MatcherTemplate template) {
-        return template.getTemplateData().getData().toByteArray();
     }
 
     public MatcherCommon.Record createFingerRecord(List<BioCommon.MatcherTemplate> fingerTemplates) {
@@ -64,8 +60,9 @@ public class OmniMatchViewModel {
         return Common.ResultCode.Success.getNumber() == resultCode.getNumber();
     }
 
-    public Matcher.RecordsResult verifyRecord(MatcherNative matcherNative, MatcherInstance matcherInstance, MatcherCommon.Record record,
-                                              String id) throws OmniMatchException, IOException {
+    public Matcher.RecordsResult verifyRecord(MatcherNative matcherNative, MatcherInstance matcherInstance,
+                                              MatcherCommon.Record record, String id) throws OmniMatchException, IOException {
+
         Matcher.VerifyRecord1to1Request verifyRecord1to1Request = Matcher.VerifyRecord1to1Request.newBuilder()
                 .setRecord(record)
                 .setRecordGalleryId(id)
