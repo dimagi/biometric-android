@@ -126,6 +126,14 @@ public class FaceMatchViewModel extends BaseTemplateViewModel {
     }
 
     @Override
+    public BioCommon.MatcherTemplate bytesToTemplate(byte[] templateData, int position) {
+        if (omniMatchUtil == null) {
+            return null;
+        }
+        return omniMatchUtil.bytesToTemplate(templateData, position);
+    }
+
+    @Override
     protected void onCleared() {
         super.onCleared();
         try {
