@@ -9,41 +9,68 @@ import org.commcare.commcaresupportlibrary.identity.model.IdentificationMatch;
 import org.commcare.commcaresupportlibrary.identity.model.MatchResult;
 import org.commcare.commcaresupportlibrary.identity.model.MatchStrength;
 
+import android.content.Intent;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.util.Log;
+
+
 import java.util.ArrayList;
-import java.util.List;
 
 import Tech5.OmniMatch.BioCommon;
 import Tech5.OmniMatch.Matcher;
 import Tech5.OmniMatch.MatcherCommon;
 
 public class SearchActivity extends BaseActivity {
+    private String templatePropName = ParamConstants.TEMPLATE_PROP_NAME_DEFAULT;
+    private float acceptanceThreshold = ParamConstants.ACCEPTANCE_THRESHOLD_DEFAULT;
+    private final String TAG = "BIOMETRIC";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+        String propName = intent.getStringExtra(ParamConstants.TEMPLATE_PROP_NAME);
+        if (propName != null) {
+            templatePropName = propName;
+        }
+        acceptanceThreshold = intent.getFloatExtra(
+                ParamConstants.ACCEPTANCE_THRESHOLD_NAME, ParamConstants.ACCEPTANCE_THRESHOLD_DEFAULT
+        );
+    }
 
     @Override
     protected void onCaptureSuccess(MatcherCommon.Record activeRecord) {
         fetchCaseData();
-
-        Matcher.RecordsResult result = templateViewModel.identifyRecord(activeRecord, 10.0f, 5);
+        Matcher.RecordsResult result = templateViewModel.identifyRecord(activeRecord, acceptanceThreshold, 5);
         ArrayList<IdentificationMatch> identifications = getIdentificationsFromResult(result);
         IdentityResponseBuilder.identificationResponse(identifications).finalizeResponse(this);
     }
 
     @Override
     protected void onCaptureCancelled() {
-        ArrayList<IdentificationMatch> identifications = new ArrayList<>();
-        IdentityResponseBuilder.identificationResponse(identifications).finalizeResponse(this);
+        finishWorkflow(new ArrayList<>());
     }
 
     private void fetchCaseData() {
-        List<String> caseIds = CaseUtils.getCaseIds(this);
-        for (String caseId : caseIds) {
-            byte[] templateData = CaseUtils.getCaseProperty(this, caseId, TEMPLATE_PARAM).getBytes();
-            // TODO: Need to get position from case data
-            int position = 0;
-            BioCommon.MatcherTemplate template = templateViewModel.bytesToTemplate(templateData, position);
-            List<BioCommon.MatcherTemplate> templateList = new ArrayList<>();
-            templateList.add(template);
-            MatcherCommon.Record record = templateViewModel.createRecord(templateList);
-            templateViewModel.insertRecord(record, caseId);
+        Cursor caseCursor = CaseUtils.getCaseMetaData(this);
+        while (caseCursor.moveToNext()) {
+            int colIndex = caseCursor.getColumnIndex(CASE_ID_PARAM);
+            if (colIndex < 0) {
+                continue;
+            }
+            String caseIdProp = caseCursor.getString(colIndex);
+            String rawTemplateStr = CaseUtils.getCaseProperty(this, caseIdProp, templatePropName);
+            if (rawTemplateStr == null) {
+                continue;
+            }
+
+            try {
+                MatcherCommon.Record record = templateViewModel.getRecordFromTemplateStr(rawTemplateStr);
+                templateViewModel.insertRecord(record, caseIdProp);
+            } catch (NullPointerException e) {
+                Log.e(TAG, "Null pointer exception on creating record: " + e);
+            }
         }
     }
 
@@ -54,18 +81,29 @@ public class SearchActivity extends BaseActivity {
         }
 
         for (MatcherCommon.RecordResult resultItem : result.getResultsList()) {
-            MatcherCommon.Candidate candidate = resultItem.getCandidate();
-            String matchGuid = candidate.getUid();
+            String matchGuid = resultItem.getCandidate().getUid();
             float score;
             if (biometricType == BioCommon.BioType.Face) {
-                score = candidate.getScores().getFace().getScore();
+                score = resultItem.getCandidate().getScores().getFace().getScore();
             } else {
-                score = candidate.getScores().getFinger().getScore();
+                score = resultItem.getCandidate().getScores().getFinger().getScore();
             }
             MatchStrength matchStrength = getMatchStrength(score);
-            identifications.add(new IdentificationMatch(matchGuid, new MatchResult((int)(score * 100), matchStrength)));
+            int confidencePercentage = (int)(score * 100);
+            identifications.add(
+                    new IdentificationMatch(matchGuid, new MatchResult(confidencePercentage, matchStrength))
+            );
         }
         return identifications;
+    }
+
+    private void finishWorkflow(ArrayList<IdentificationMatch> identifications) {
+        if (identifications.size() == 0) {
+            identifications.add(
+                    new IdentificationMatch(caseId, new MatchResult(0, MatchStrength.ONE_STAR))
+            );
+        }
+        IdentityResponseBuilder.identificationResponse(identifications).finalizeResponse(this);
     }
 
     @Override
