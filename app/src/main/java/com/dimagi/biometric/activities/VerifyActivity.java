@@ -1,10 +1,12 @@
 package com.dimagi.biometric.activities;
 
-import android.os.Bundle;
+import com.dimagi.biometric.R;
 
 import org.commcare.commcaresupportlibrary.identity.IdentityResponseBuilder;
 import org.commcare.commcaresupportlibrary.identity.model.MatchResult;
 import org.commcare.commcaresupportlibrary.identity.model.MatchStrength;
+
+import java.util.ArrayList;
 
 import Tech5.OmniMatch.MatcherCommon;
 
@@ -32,5 +34,17 @@ public class VerifyActivity extends BaseActivity {
         IdentityResponseBuilder.verificationResponse(
                 caseId, new MatchResult(0, MatchStrength.ONE_STAR)
         ).finalizeResponse(this);
+    }
+
+    @Override
+    protected ArrayList<String> validateRequiredParams() {
+        ArrayList<String> errors = new ArrayList<>();
+        if (caseId == null) {
+            errors.add(getText(R.string.missing_case_id).toString());
+        }
+        if (templateStr == null) {
+            errors.add(getText(R.string.missing_template_str).toString());
+        }
+        return errors;
     }
 }

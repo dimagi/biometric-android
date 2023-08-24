@@ -1,6 +1,7 @@
 package com.dimagi.biometric.activities;
 
-import static com.dimagi.biometric.Constants.TEMPLATE_PARAM;
+import com.dimagi.biometric.ParamConstants;
+import com.dimagi.biometric.R;
 
 import org.commcare.commcaresupportlibrary.CaseUtils;
 import org.commcare.commcaresupportlibrary.identity.IdentityResponseBuilder;
@@ -65,5 +66,14 @@ public class SearchActivity extends BaseActivity {
             identifications.add(new IdentificationMatch(matchGuid, new MatchResult((int)(score * 100), matchStrength)));
         }
         return identifications;
+    }
+
+    @Override
+    protected ArrayList<String> validateRequiredParams() {
+        ArrayList<String> errors = new ArrayList<>();
+        if (caseId == null) {
+            errors.add(getText(R.string.missing_case_id).toString());
+        }
+        return errors;
     }
 }

@@ -1,6 +1,5 @@
 package com.dimagi.biometric.activities;
 
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -38,6 +37,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     final protected String TEMPLATE_PARAM = "template";
     protected BioCommon.BioType biometricType;
     protected String caseId;
+    protected String templateStr;
 
     private final String MATCH_FRAGMENT_TAG = "matchFragment";
 
@@ -46,6 +46,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected abstract void onCaptureSuccess(MatcherCommon.Record activeRecord);
     protected abstract void onCaptureCancelled();
+    protected abstract ArrayList<String> validateRequiredParams();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +72,13 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void loadFragment(Fragment fragment) {
+        ArrayList<String> errors = validateRequiredParams();
+        if (errors.size() > 0) {
+            Bundle args = new Bundle();
+            String errorStr = createErrorStr(errors);
+            args.putString("errors", errorStr);
+            fragment.setArguments(args);
+        }
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.mainContainer, fragment, MATCH_FRAGMENT_TAG);
         ft.commit();
@@ -85,6 +93,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             biometricType = BioCommon.BioType.Finger;
         }
         caseId = intent.getStringExtra(CASE_ID_PARAM);
+        templateStr = intent.getStringExtra(TEMPLATE_PARAM);
     }
 
     private void initTemplateViewModel() {
@@ -132,8 +141,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     matchFragment = new FingerMatchFragment();
                 }
                 loadFragment(matchFragment);
-            }
-            else if (status == LicenseViewModel.initStatus.FAIL || status == LicenseViewModel.initStatus.NO_NETWORK) {
+            } else {
                 toggleRetryButton(true);
             }
         });
@@ -196,6 +204,14 @@ public abstract class BaseActivity extends AppCompatActivity {
         caseId = savedInstanceState.getString(CASE_ID_PARAM);
         biometricType = (BioCommon.BioType)savedInstanceState.getSerializable(BIOMETRIC_TYPE_PARAM);
         initTemplateViewModel();
+    }
+
+    private String createErrorStr(ArrayList<String> errors) {
+        StringBuilder errorStr = new StringBuilder();
+        for (String error : errors) {
+            errorStr.append(error).append("\n");
+        }
+        return errorStr.toString();
     }
 }
 
