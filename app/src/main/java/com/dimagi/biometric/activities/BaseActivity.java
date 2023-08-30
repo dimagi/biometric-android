@@ -37,7 +37,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     final protected String TEMPLATE_PARAM = "template";
     protected BioCommon.BioType biometricType;
     protected String caseId;
-
+    protected String templateStr;
     private final String MATCH_FRAGMENT_TAG = "matchFragment";
 
     private LicenseViewModel licenseViewModel;
@@ -92,6 +92,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             biometricType = BioCommon.BioType.Finger;
         }
         caseId = intent.getStringExtra(CASE_ID_PARAM);
+        templateStr = intent.getStringExtra(TEMPLATE_PARAM);
     }
 
     private void initTemplateViewModel() {
