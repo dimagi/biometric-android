@@ -30,4 +30,9 @@ public class EnrollActivity extends BaseActivity {
         // TODO: Return to CC with cancelled output. This is pending required changes to the CC Support Library
         // IdentityResponseBuilder.registrationResponse(caseId).finalizeResponse(this);
     }
+
+    @Override
+    protected ArrayList<String> validateRequiredParams() {
+        return new ArrayList<>();
+    }
 }
