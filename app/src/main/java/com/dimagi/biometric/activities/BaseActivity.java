@@ -24,7 +24,6 @@ import com.dimagi.biometric.R;
 import org.commcare.commcaresupportlibrary.identity.model.MatchStrength;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import Tech5.OmniMatch.BioCommon;
 import Tech5.OmniMatch.MatcherCommon;
@@ -159,20 +158,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             return MatchStrength.TWO_STARS;
         }
         return MatchStrength.ONE_STAR;
-    }
-
-    protected MatcherCommon.Record getRecordFromIntent() {
-        Intent intent = getIntent();
-        byte[] caseTemplateData = intent.getByteArrayExtra(TEMPLATE_PARAM);
-        if (caseTemplateData != null && caseTemplateData.length > 0) {
-            // TODO: Need to get position from intent
-            int position = 0;
-            BioCommon.MatcherTemplate template = templateViewModel.bytesToTemplate(caseTemplateData, position);
-            List<BioCommon.MatcherTemplate> templateList = new ArrayList<>();
-            templateList.add(template);
-            return templateViewModel.createRecord(templateList);
-        }
-        return null;
     }
 
     private void toggleRetryButton(boolean isVisible) {
