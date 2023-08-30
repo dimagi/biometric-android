@@ -73,9 +73,4 @@ public abstract class BaseTemplateViewModel extends AndroidViewModel {
         }
         return createRecord(templateList);
     }
-
-    public byte[] templateToBytes(BioCommon.MatcherTemplate template) {
-        return omniMatchViewModel.templateToBytes(template);
-    }
-
 }
