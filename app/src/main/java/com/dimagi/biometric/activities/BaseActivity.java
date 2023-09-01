@@ -71,13 +71,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void loadFragment(Fragment fragment) {
-        ArrayList<String> errors = validateRequiredParams();
-        if (errors.size() > 0) {
-            Bundle args = new Bundle();
-            String errorStr = createErrorStr(errors);
-            args.putString("errors", errorStr);
-            fragment.setArguments(args);
-        }
+        insertFragmentArgs(fragment);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.mainContainer, fragment, MATCH_FRAGMENT_TAG);
         ft.commit();
@@ -92,6 +86,16 @@ public abstract class BaseActivity extends AppCompatActivity {
             biometricType = BioCommon.BioType.Finger;
         }
         caseId = intent.getStringExtra(CASE_ID_PARAM);
+    }
+
+    private void insertFragmentArgs(Fragment fragment) {
+        ArrayList<String> errors = validateRequiredParams();
+        if (errors.size() > 0) {
+            Bundle args = new Bundle();
+            String errorStr = createErrorStr(errors);
+            args.putString("errors", errorStr);
+            fragment.setArguments(args);
+        }
     }
 
     private void initTemplateViewModel() {

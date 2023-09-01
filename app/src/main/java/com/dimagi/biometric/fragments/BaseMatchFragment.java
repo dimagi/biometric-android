@@ -74,6 +74,10 @@ public abstract class BaseMatchFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Bundle args = getArguments();
+        handleStartButtonValidation(args, view);
+    }
+
+    private void handleStartButtonValidation(Bundle args, @NonNull View view) {
         String errors = null;
         if (args != null) {
             errors = args.getString("errors");
