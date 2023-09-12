@@ -1,6 +1,7 @@
 package com.dimagi.biometric.activities;
 
 import com.dimagi.biometric.OmniMatchUtil;
+import com.dimagi.biometric.R;
 
 import org.commcare.commcaresupportlibrary.BiometricUtils;
 import org.commcare.commcaresupportlibrary.identity.IdentityResponseBuilder;
@@ -8,7 +9,6 @@ import org.commcare.commcaresupportlibrary.identity.IdentityResponseBuilder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import Tech5.OmniMatch.BioCommon;
 import Tech5.OmniMatch.FingerCommon;
@@ -30,8 +30,7 @@ public class EnrollActivity extends BaseActivity {
                 );
             }
         }
-        String randId = UUID.randomUUID().toString();
-        IdentityResponseBuilder.registrationResponse(randId, templateDataList).finalizeResponse(this);
+        IdentityResponseBuilder.registrationResponse(caseId, templateDataList).finalizeResponse(this);
     }
 
     @Override
@@ -42,6 +41,10 @@ public class EnrollActivity extends BaseActivity {
 
     @Override
     protected ArrayList<String> validateRequiredParams() {
-        return new ArrayList<>();
+        ArrayList<String> errors = new ArrayList<>();
+        if (caseId == null) {
+            errors.add(getText(R.string.missing_case_id).toString());
+        }
+        return errors;
     }
 }
