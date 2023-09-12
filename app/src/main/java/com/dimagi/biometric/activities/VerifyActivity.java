@@ -21,15 +21,15 @@ public class VerifyActivity extends BaseActivity {
             templateViewModel.insertRecord(caseRecord, caseId);
         }
         float score = templateViewModel.verifyRecord(activeRecord, caseId);
-        finishWorkflow(score);
+        finalizeResponse(score);
     }
 
     @Override
     protected void onCaptureCancelled() {
-        finishWorkflow(0f);
+        finalizeResponse(0f);
     }
 
-    private void finishWorkflow(float score) {
+    private void finalizeResponse(float score) {
         int confidencePercentage = (int)(score * 100);
         MatchStrength matchStrength = getMatchStrength(score);
         IdentityResponseBuilder.verificationResponse(
