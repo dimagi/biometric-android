@@ -7,9 +7,14 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.dimagi.biometric.OmniMatchUtil;
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import org.commcare.commcaresupportlibrary.BiometricUtils;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import Tech5.OmniMatch.BioCommon;
 import Tech5.OmniMatch.Common;
@@ -30,7 +35,7 @@ public abstract class BaseTemplateViewModel extends AndroidViewModel {
 
     public abstract MatcherCommon.Record createRecord(List<BioCommon.MatcherTemplate> templates);
     protected final MutableLiveData<MatcherCommon.Record> activeRecord = new MutableLiveData<>();
-    protected OmniMatchViewModel omniMatchViewModel = null;
+    protected OmniMatchUtil omniMatchUtil = null;
 
     public void setActiveRecord(MatcherCommon.Record record) {
         activeRecord.postValue(record);
@@ -52,12 +57,20 @@ public abstract class BaseTemplateViewModel extends AndroidViewModel {
         super(application);
     }
 
-    public BioCommon.MatcherTemplate bytesToTemplate(byte[] templateData, int position) {
-        return omniMatchViewModel.bytesToTemplate(templateData, position);
-    }
+    public abstract BioCommon.MatcherTemplate bytesToTemplate(byte[] templateData, int position);
 
-    public byte[] templateToBytes(BioCommon.MatcherTemplate template) {
-        return omniMatchViewModel.templateToBytes(template);
-    }
+    public MatcherCommon.Record getRecordFromTemplateStr(String rawTemplateStr) {
+        Map<BiometricUtils.BiometricIdentifier, byte[]> templateDataList = BiometricUtils.convertBase64StringTemplatesToByteArray(rawTemplateStr);
+        if (templateDataList == null) {
+            return null;
+        }
 
+        List<BioCommon.MatcherTemplate> templateList = new ArrayList<>();
+        for (Map.Entry<BiometricUtils.BiometricIdentifier, byte[]> templateItem : templateDataList.entrySet()) {
+            int position = OmniMatchUtil.getOmniPosition(templateItem.getKey());
+            BioCommon.MatcherTemplate template = bytesToTemplate(templateItem.getValue(), position);
+            templateList.add(template);
+        }
+        return createRecord(templateList);
+    }
 }

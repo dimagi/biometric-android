@@ -1,13 +1,16 @@
-package com.dimagi.biometric.viewmodels;
+package com.dimagi.biometric;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+
+import org.commcare.commcaresupportlibrary.BiometricUtils;
 
 import java.io.IOException;
 import java.util.List;
 
 import Tech5.OmniMatch.BioCommon;
 import Tech5.OmniMatch.Common;
+import Tech5.OmniMatch.FingerCommon;
 import Tech5.OmniMatch.JNI.Matchers.MatcherInstance;
 import Tech5.OmniMatch.JNI.Matchers.MatcherNative;
 import Tech5.OmniMatch.JNI.OmniMatchException;
@@ -17,7 +20,7 @@ import Tech5.OmniMatch.Matcher;
 import Tech5.OmniMatch.MatcherCommon;
 import Tech5.OmniMatch.TemplateCreatorCommon;
 
-public class OmniMatchViewModel {
+public class OmniMatchUtil {
 
     private Common.Image deserializeImage(byte[] image, Common.ImageFormat imageFormat, String batchIdentifier) {
         Common.Image.Builder builder = Common.Image.newBuilder();
@@ -31,10 +34,6 @@ public class OmniMatchViewModel {
         ByteString templateBytes = ByteString.copyFrom(templateData);
         BioCommon.Template template = BioCommon.Template.newBuilder().setData(templateBytes).setQuality(100).build();
         return createMatcherTemplate(template, position);
-    }
-
-    public byte[] templateToBytes(BioCommon.MatcherTemplate template) {
-        return template.getTemplateData().getData().toByteArray();
     }
 
     public MatcherCommon.Record createFingerRecord(List<BioCommon.MatcherTemplate> fingerTemplates) {
@@ -64,8 +63,9 @@ public class OmniMatchViewModel {
         return Common.ResultCode.Success.getNumber() == resultCode.getNumber();
     }
 
-    public Matcher.RecordsResult verifyRecord(MatcherNative matcherNative, MatcherInstance matcherInstance, MatcherCommon.Record record,
-                                              String id) throws OmniMatchException, IOException {
+    public Matcher.RecordsResult verifyRecord(MatcherNative matcherNative, MatcherInstance matcherInstance,
+                                              MatcherCommon.Record record, String id) throws OmniMatchException, IOException {
+
         Matcher.VerifyRecord1to1Request verifyRecord1to1Request = Matcher.VerifyRecord1to1Request.newBuilder()
                 .setRecord(record)
                 .setRecordGalleryId(id)
@@ -132,5 +132,43 @@ public class OmniMatchViewModel {
         BioCommon.MatcherTemplate.Builder matcherTemplateBuilder = BioCommon.MatcherTemplate
                 .newBuilder().setTemplateData(template).setPosition(position);
         return matcherTemplateBuilder.build();
+    }
+
+    public static BiometricUtils.BiometricIdentifier getBiometricIdentifierFromPosition(FingerCommon.NistFingerPosition fingerPosition) {
+        switch (fingerPosition) {
+            case LeftIndexFinger:
+                return BiometricUtils.BiometricIdentifier.LEFT_INDEX_FINGER;
+            case LeftMiddleFinger:
+                return BiometricUtils.BiometricIdentifier.LEFT_MIDDLE_FINGER;
+            case LeftRingFinger:
+                return BiometricUtils.BiometricIdentifier.LEFT_RING_FINGER;
+            case LeftLittleFinger:
+                return BiometricUtils.BiometricIdentifier.LEFT_PINKY_FINGER;
+            case LeftThumb:
+                return BiometricUtils.BiometricIdentifier.LEFT_THUMB;
+            case RightIndexFinger:
+                return BiometricUtils.BiometricIdentifier.RIGHT_INDEX_FINGER;
+            case RightMiddleFinger:
+                return BiometricUtils.BiometricIdentifier.RIGHT_MIDDLE_FINGER;
+            case RightRingFinger:
+                return BiometricUtils.BiometricIdentifier.RIGHT_RING_FINGER;
+            case RightLittleFinger:
+                return BiometricUtils.BiometricIdentifier.RIGHT_PINKY_FINGER;
+            case RightThumb:
+                return BiometricUtils.BiometricIdentifier.RIGHT_THUMB;
+            default:
+                return BiometricUtils.BiometricIdentifier.FACE;
+        }
+    }
+
+    /**
+     * Gets the finger position that OmniMatch uses to index fingers. This is necessary as the ordinals
+     * from BiometricIdentifier are different and so, using these will cause a position error when using OmniMatch
+     */
+    public static int getOmniPosition(BiometricUtils.BiometricIdentifier identifier) {
+        if (identifier == BiometricUtils.BiometricIdentifier.FACE) {
+            return 0;
+        }
+        return identifier.ordinal() + 1;
     }
 }
