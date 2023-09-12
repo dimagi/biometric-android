@@ -1,5 +1,6 @@
 package com.dimagi.biometric.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -7,6 +8,8 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.dimagi.biometric.ParamManager;
+import com.dimagi.biometric.ParamConstants;
 import com.dimagi.biometric.viewmodels.FingerMatchViewModel;
 
 import java.util.ArrayList;
@@ -20,7 +23,6 @@ import ai.tech5.finger.utils.Finger;
 import ai.tech5.finger.utils.FingerCaptureResult;
 import ai.tech5.finger.utils.ImageConfiguration;
 import ai.tech5.finger.utils.ImageType;
-import ai.tech5.finger.utils.SegmentationMode;
 import ai.tech5.finger.utils.T5FingerCaptureController;
 import ai.tech5.finger.utils.T5FingerCapturedListener;
 
@@ -35,6 +37,7 @@ public class FingerMatchFragment extends BaseMatchFragment implements T5FingerCa
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         fingerMatchViewModel = new ViewModelProvider(requireActivity()).get(FingerMatchViewModel.class);
     }
 
@@ -45,10 +48,10 @@ public class FingerMatchFragment extends BaseMatchFragment implements T5FingerCa
 
         fingerCaptureController.showElipses(true);
         fingerCaptureController.setLivenessCheck(true);
-        fingerCaptureController.setDetectorThreshold(0.9f);
 
-        // TODO: Change this to segment for multiple fingers
-        fingerCaptureController.setSegmentationMode(SegmentationMode.SEGMENTATION_MODE_RIGHT_THUMB);
+        ParamManager params = getParams();
+        fingerCaptureController.setDetectorThreshold(params.getDetectorThreshold());
+        fingerCaptureController.setSegmentationMode(params.getSegmentationMode());
         fingerCaptureController.setCaptureMode(CaptureMode.CAPTURE_MODE_SELF);
         fingerCaptureController.setIsGetQuality(true);
 
@@ -67,7 +70,7 @@ public class FingerMatchFragment extends BaseMatchFragment implements T5FingerCa
         slapConfig.setIsCropImage(false);
 
         fingerCaptureController.setSlapImagesConfig(slapConfig);
-        fingerCaptureController.setTimeoutInSecs(20);
+        fingerCaptureController.setTimeoutInSecs(params.getTimeoutSecs());
         fingerCaptureController.captureFingers(requireContext(), this);
     }
 
@@ -105,5 +108,15 @@ public class FingerMatchFragment extends BaseMatchFragment implements T5FingerCa
     @Override
     public void onTimedout() {
         handleErrorMessage("Failed to capture finger image: Timed out");
+    }
+
+    @Override
+    protected ParamManager getParams() {
+        Intent intent = requireActivity().getIntent();
+        ParamManager params = new ParamManager();
+        params.setTimeoutSecs(intent.getIntExtra(ParamConstants.TIMEOUT_SECS_NAME, ParamConstants.TIMEOUT_SECS_DEFAULT));
+        params.setDetectorThreshold(intent.getFloatExtra(ParamConstants.DETECTOR_THRESHOLD_NAME, ParamConstants.DETECTOR_THRESHOLD_DEFAULT));
+        params.setSegmentationMode(intent.getStringExtra(ParamConstants.SEGMENTATION_MODE_NAME));
+        return params;
     }
 }

@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.dimagi.biometric.ParamManager;
 import com.dimagi.biometric.R;
 
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ public abstract class BaseMatchFragment extends Fragment {
 
     protected abstract void handleStartCapture();
     protected abstract void handleCancelCapture();
+    protected abstract ParamManager getParams();
 
     public BaseMatchFragment() {
         // Required empty public constructor

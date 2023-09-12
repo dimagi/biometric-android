@@ -31,5 +31,5 @@ public class ParamConstants {
     public static final String TEMPLATE_PROP_NAME = "template_prop_name";
     public static final String TEMPLATE_PROP_NAME_DEFAULT = "bio_template";
     public static final String ACCEPTANCE_THRESHOLD_NAME = "acceptance_threshold";
-    public static final float ACCEPTANCE_THRESHOLD_DEFAULT = 10.0f;
+    public static final float ACCEPTANCE_THRESHOLD_DEFAULT = 4.0f;
 }
