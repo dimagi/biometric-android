@@ -8,6 +8,9 @@
     <string name="omnimatch_failed">Failed to initialize OmniMatch</string>
     <string name="omnimatch_version">OmniMatch SDK v:4.5.1</string>
     <string name="connection_failed">No network available to initialize OmniMatch license</string>
+    <string name="license_validation_failed">Failed to validate OmniMatch license</string>
+    <string name="missing_case_id">Missing required \"case_id\" input parameter.</string>
+    <string name="missing_template_str">Missing required \"template\" input parameter.</string>
 
     <string name="permission_rationale">This app requires the Camera and CommCare Read permissions in order to do biometric capture and matching.</string>
     <string name="permission_settings">You will need to navigate to the app settings to enable the required permissions.</string>

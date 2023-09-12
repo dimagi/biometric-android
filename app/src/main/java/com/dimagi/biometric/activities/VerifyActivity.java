@@ -33,4 +33,16 @@ public class VerifyActivity extends BaseActivity {
                 caseId, new MatchResult(0, MatchStrength.ONE_STAR)
         ).finalizeResponse(this);
     }
+
+    @Override
+    protected ArrayList<String> validateRequiredParams() {
+        ArrayList<String> errors = new ArrayList<>();
+        if (caseId == null) {
+            errors.add(getText(R.string.missing_case_id).toString());
+        }
+        if (templateStr == null) {
+            errors.add(getText(R.string.missing_template_str).toString());
+        }
+        return errors;
+    }
 }

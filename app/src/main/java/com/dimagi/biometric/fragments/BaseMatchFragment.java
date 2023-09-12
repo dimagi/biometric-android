@@ -11,6 +11,7 @@ import android.Manifest;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -61,14 +62,33 @@ public abstract class BaseMatchFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_menu, container, false);
-        Button startButton = view.findViewById(R.id.start_capture_button);
-        startButton.setOnClickListener(v -> handleStartClick());
         Button cancelButton = view.findViewById(R.id.cancel_capture_button);
         cancelButton.setOnClickListener(v -> handleCancelCapture());
         if (savedInstanceState != null) {
             restoreDialog(savedInstanceState);
         }
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Bundle args = getArguments();
+        handleStartButtonValidation(args, view);
+    }
+
+    private void handleStartButtonValidation(Bundle args, @NonNull View view) {
+        String errors = null;
+        if (args != null) {
+            errors = args.getString("errors");
+        }
+        Button startButton = view.findViewById(R.id.start_capture_button);
+        if (errors == null) {
+            startButton.setOnClickListener(v -> handleStartClick());
+        } else {
+            startButton.setEnabled(false);
+            handleErrorMessage(errors);
+        }
     }
 
     private final ActivityResultLauncher<String[]> requestPermissionLauncher =
@@ -122,8 +142,8 @@ public abstract class BaseMatchFragment extends Fragment {
         try {
             TextView errorText = requireView().findViewById(R.id.error_text);
             errorText.setText(error);
-        } catch (NullPointerException ex) {
-            Log.e(TAG, "Null pointer on trying to set error message");
+        } catch (NullPointerException | IllegalStateException e) {
+            Log.e(TAG, "Exception trying to create main menu error message: " + e);
         }
     }
 

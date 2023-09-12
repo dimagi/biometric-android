@@ -40,7 +40,8 @@ public class LicenseViewModel extends AndroidViewModel {
     public enum initStatus {
         FAIL,
         SUCCESS,
-        NO_NETWORK
+        NO_NETWORK,
+        NO_VALID_LICENSE,
     }
 
     public LicenseViewModel(@NonNull Application application) {
@@ -61,6 +62,9 @@ public class LicenseViewModel extends AndroidViewModel {
             boolean isSDKInitialized = loadLicense(context);
             if (isSDKInitialized) {
                 status.postValue(initStatus.SUCCESS);
+            } else {
+                status.postValue(initStatus.NO_VALID_LICENSE);
+                statusMessage.postValue(application.getResources().getString(R.string.license_validation_failed));
             }
         }).start();
     }
