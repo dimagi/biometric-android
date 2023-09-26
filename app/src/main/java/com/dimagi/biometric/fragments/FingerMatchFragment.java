@@ -114,8 +114,15 @@ public class FingerMatchFragment extends BaseMatchFragment implements T5FingerCa
     protected ParamManager getParams() {
         Intent intent = requireActivity().getIntent();
         ParamManager params = new ParamManager();
-        params.setTimeoutSecs(intent.getIntExtra(ParamConstants.TIMEOUT_SECS_NAME, ParamConstants.TIMEOUT_SECS_DEFAULT));
-        params.setDetectorThreshold(intent.getFloatExtra(ParamConstants.DETECTOR_THRESHOLD_NAME, ParamConstants.DETECTOR_THRESHOLD_DEFAULT));
+
+        params.setTimeoutSecs(safeParseInteger(
+                intent.getStringExtra(ParamConstants.TIMEOUT_SECS_NAME),
+                ParamConstants.TIMEOUT_SECS_DEFAULT
+        ));
+        params.setDetectorThreshold(safeParseFloat(
+                intent.getStringExtra(ParamConstants.DETECTOR_THRESHOLD_NAME),
+                ParamConstants.DETECTOR_THRESHOLD_DEFAULT
+        ));
         params.setSegmentationMode(intent.getStringExtra(ParamConstants.SEGMENTATION_MODE_NAME));
         return params;
     }
