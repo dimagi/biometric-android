@@ -53,3 +53,8 @@ In Android Studio, hit the build button (a green "play" symbol in the toolbar). 
 
 - Make sure your screen is unlocked (or else you'll see [something like this](https://gist.github.com/dannyroberts/6d8d57ff4d5f9a1b70a5)).
 - select your device.
+
+## Code Style Settings
+In order to comply with code style guidelines we follow, please use [Commcare Coding Style file](https://github.com/dimagi/commcare-android/blob/master/.android_studio_settings/codestyles/CommCare%20Coding%20Style.xml) and [Commcare Inspection Profile](https://github.com/dimagi/commcare-android/blob/master/.android_studio_settings/inspection/CommCare%20Inpsection%20Profile.xml) as your respective code style and inpection profile in Android Studio. To add these files into Android studio, please do the following:
+1. Navigate to File -> Settings -> Editor -> Inspections. You will then click on the gear icon next to "Profile" and import `CommCareInspectionProfile.xml`
+2. Navigate to File -> Settings -> Editor -> Code Style. You will then click on the gear icon next to "Scheme" and import `CommCareCodingStyle.xml`
