@@ -23,7 +23,7 @@ import ai.tech5.pheonix.capture.controller.AirsnapFaceThresholds;
 import ai.tech5.pheonix.capture.controller.FaceCaptureController;
 import ai.tech5.pheonix.capture.controller.FaceCaptureListener;
 
-public class FaceMatchFragment extends BaseMatchFragment implements FaceCaptureListener{
+public class FaceMatchFragment extends BaseMatchFragment implements FaceCaptureListener {
     private static final String TAG = "BIOMETRIC";
 
     protected FaceMatchViewModel faceMatchViewModel;
@@ -111,8 +111,8 @@ public class FaceMatchFragment extends BaseMatchFragment implements FaceCaptureL
                 intent.getStringExtra(ParamConstants.ROLL_NAME), ParamConstants.ROLL_DEFAULT
         ));
         params.setMask(safeParseFloat(
-            intent.getStringExtra(ParamConstants.MASK_NAME),
-            ParamConstants.MASK_DEFAULT
+                intent.getStringExtra(ParamConstants.MASK_NAME),
+                ParamConstants.MASK_DEFAULT
         ));
         params.setSunglasses(safeParseFloat(
                 intent.getStringExtra(ParamConstants.SUNGLASSES_NAME),
