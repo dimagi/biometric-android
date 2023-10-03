@@ -23,7 +23,7 @@ import ai.tech5.pheonix.capture.controller.AirsnapFaceThresholds;
 import ai.tech5.pheonix.capture.controller.FaceCaptureController;
 import ai.tech5.pheonix.capture.controller.FaceCaptureListener;
 
-public class FaceMatchFragment extends BaseMatchFragment implements FaceCaptureListener{
+public class FaceMatchFragment extends BaseMatchFragment implements FaceCaptureListener {
     private static final String TAG = "BIOMETRIC";
 
     protected FaceMatchViewModel faceMatchViewModel;
@@ -100,16 +100,41 @@ public class FaceMatchFragment extends BaseMatchFragment implements FaceCaptureL
     protected ParamManager getParams() {
         Intent intent = requireActivity().getIntent();
         ParamManager params = new ParamManager();
-        params.setPitch(intent.getIntExtra(ParamConstants.PITCH_NAME, ParamConstants.PITCH_DEFAULT));
-        params.setYaw(intent.getIntExtra(ParamConstants.YAW_NAME, ParamConstants.YAW_DEFAULT));
-        params.setRoll(intent.getIntExtra(ParamConstants.ROLL_NAME, ParamConstants.ROLL_DEFAULT));
-        params.setMask(intent.getFloatExtra(ParamConstants.MASK_NAME, ParamConstants.MASK_DEFAULT));
-        params.setSunglasses(intent.getFloatExtra(ParamConstants.SUNGLASSES_NAME, ParamConstants.SUNGLASSES_DEFAULT));
-        params.setEyesClosed(intent.getFloatExtra(ParamConstants.EYES_CLOSED_NAME, ParamConstants.EYES_CLOSED_DEFAULT));
-        params.setBrisque(intent.getIntExtra(ParamConstants.BRISQUE_NAME, ParamConstants.BRISQUE_DEFAULT));
-        params.setImageCenterTolerance(intent.getFloatExtra(ParamConstants.IMAGE_CENTER_TOLERANCE_NAME, ParamConstants.IMAGE_CENTER_TOLERANCE_DEFAULT));
-        params.setAutoCaptureEnabled(intent.getBooleanExtra(ParamConstants.AUTO_CAPTURE_ENABLED_NAME, ParamConstants.AUTO_CAPTURE_ENABLED_DEFAULT));
-        params.setTimeoutSecs(intent.getIntExtra(ParamConstants.TIMEOUT_SECS_NAME, ParamConstants.TIMEOUT_SECS_DEFAULT));
+
+        params.setPitch(safeParseInteger(
+                intent.getStringExtra(ParamConstants.PITCH_NAME), ParamConstants.PITCH_DEFAULT
+        ));
+        params.setYaw(safeParseInteger(
+                intent.getStringExtra(ParamConstants.YAW_NAME), ParamConstants.YAW_DEFAULT
+        ));
+        params.setRoll(safeParseInteger(
+                intent.getStringExtra(ParamConstants.ROLL_NAME), ParamConstants.ROLL_DEFAULT
+        ));
+        params.setMask(safeParseFloat(
+                intent.getStringExtra(ParamConstants.MASK_NAME),
+                ParamConstants.MASK_DEFAULT
+        ));
+        params.setSunglasses(safeParseFloat(
+                intent.getStringExtra(ParamConstants.SUNGLASSES_NAME),
+                ParamConstants.SUNGLASSES_DEFAULT
+        ));
+        params.setEyesClosed(safeParseFloat(
+                intent.getStringExtra(ParamConstants.EYES_CLOSED_NAME),
+                ParamConstants.EYES_CLOSED_DEFAULT
+        ));
+        params.setBrisque(safeParseInteger(
+                intent.getStringExtra(ParamConstants.BRISQUE_NAME), ParamConstants.BRISQUE_DEFAULT
+        ));
+        params.setImageCenterTolerance(safeParseFloat(
+                intent.getStringExtra(ParamConstants.IMAGE_CENTER_TOLERANCE_NAME),
+                ParamConstants.IMAGE_CENTER_TOLERANCE_DEFAULT
+        ));
+        params.setTimeoutSecs(safeParseInteger(
+                intent.getStringExtra(ParamConstants.TIMEOUT_SECS_NAME), ParamConstants.TIMEOUT_SECS_DEFAULT
+        ));
+        params.setAutoCaptureEnabled(safeParseBool(
+                intent.getStringExtra(ParamConstants.AUTO_CAPTURE_ENABLED_NAME), ParamConstants.AUTO_CAPTURE_ENABLED_DEFAULT
+        ));
         return params;
     }
 }

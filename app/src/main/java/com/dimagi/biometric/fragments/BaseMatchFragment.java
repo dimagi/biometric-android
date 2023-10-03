@@ -221,4 +221,30 @@ public abstract class BaseMatchFragment extends Fragment {
             }
         }
     }
+
+    protected Integer safeParseInteger(String num, int defaultVal) {
+        int outVal = defaultVal;
+        try {
+            outVal = Integer.parseInt(num);
+        } catch (NumberFormatException | NullPointerException ignored) {}
+        return outVal;
+    }
+
+    protected Float safeParseFloat(String num, float defaultVal) {
+        float outVal = defaultVal;
+        try {
+            outVal = Float.parseFloat(num);
+        } catch (NumberFormatException | NullPointerException ignored) {}
+        return outVal;
+    }
+
+    protected Boolean safeParseBool(String val, boolean defaultVal) {
+        boolean outVal = defaultVal;
+        try {
+            if (val.equalsIgnoreCase("true") || val.equalsIgnoreCase("false")) {
+                outVal = Boolean.parseBoolean(val);
+            }
+        } catch (NullPointerException ignored) {}
+        return outVal;
+    }
 }
