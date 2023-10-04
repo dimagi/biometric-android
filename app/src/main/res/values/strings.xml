@@ -20,6 +20,6 @@
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
     <string name="retry">Retry</string>
-
+    <string name="label_frame_hand">No Finger(s) detected</string>
     <string name="preference_file_key">perm_prefs</string>
 </resources>
