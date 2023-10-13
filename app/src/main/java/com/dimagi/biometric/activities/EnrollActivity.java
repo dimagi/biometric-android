@@ -3,7 +3,7 @@ package com.dimagi.biometric.activities;
 import com.dimagi.biometric.OmniMatchUtil;
 import com.dimagi.biometric.R;
 
-import org.commcare.commcaresupportlibrary.BiometricUtils;
+import org.commcare.commcaresupportlibrary.identity.BiometricIdentifier;
 import org.commcare.commcaresupportlibrary.identity.IdentityResponseBuilder;
 
 import java.util.ArrayList;
@@ -17,10 +17,10 @@ import Tech5.OmniMatch.MatcherCommon;
 public class EnrollActivity extends BaseActivity {
     @Override
     protected void onCaptureSuccess(MatcherCommon.Record activeRecord) {
-        Map<BiometricUtils.BiometricIdentifier, byte[]> templateDataList = new HashMap<>();
+        Map<BiometricIdentifier, byte[]> templateDataList = new HashMap<>();
         if (biometricType == BioCommon.BioType.Face) {
             byte[] templateData = activeRecord.getFace().getTemplateData().getData().toByteArray();
-            templateDataList.put(BiometricUtils.BiometricIdentifier.FACE, templateData);
+            templateDataList.put(BiometricIdentifier.FACE, templateData);
         } else {
             for (BioCommon.MatcherTemplate template : activeRecord.getNnFingersList()) {
                 byte[] templateData = template.getTemplateData().getData().toByteArray();
@@ -35,7 +35,7 @@ public class EnrollActivity extends BaseActivity {
 
     @Override
     protected void onCaptureCancelled() {
-        Map<BiometricUtils.BiometricIdentifier, byte[]> templateDataList = new HashMap<>();
+        Map<BiometricIdentifier, byte[]> templateDataList = new HashMap<>();
         IdentityResponseBuilder.registrationResponse(caseId, templateDataList).finalizeResponse(this);
     }
 
