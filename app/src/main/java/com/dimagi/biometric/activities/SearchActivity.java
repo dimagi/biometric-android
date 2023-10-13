@@ -49,7 +49,9 @@ public class SearchActivity extends BaseActivity {
 
     @Override
     protected void onCaptureCancelled() {
-        finishWorkflow(new ArrayList<>());
+        ArrayList<IdentificationMatch> identifications = new ArrayList<>();
+        identifications.add(new IdentificationMatch(caseId, new MatchResult(0, MatchStrength.ONE_STAR)));
+        IdentityResponseBuilder.identificationResponse(identifications).finalizeResponse(this);
     }
 
     private void fetchCaseData() {
@@ -72,15 +74,6 @@ public class SearchActivity extends BaseActivity {
                 Log.e(TAG, "Null pointer exception on creating record: " + e);
             }
         }
-    }
-
-    private void finishWorkflow(ArrayList<IdentificationMatch> identifications) {
-        if (identifications.size() == 0) {
-            identifications.add(
-                    new IdentificationMatch(caseId, new MatchResult(0, MatchStrength.ONE_STAR))
-            );
-        }
-        IdentityResponseBuilder.identificationResponse(identifications).finalizeResponse(this);
     }
 
     private ArrayList<IdentificationMatch> getIdentificationsFromResult(Matcher.RecordsResult result) {
