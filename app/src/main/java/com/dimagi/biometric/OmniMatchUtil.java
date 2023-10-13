@@ -3,7 +3,7 @@ package com.dimagi.biometric;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import org.commcare.commcaresupportlibrary.BiometricUtils;
+import org.commcare.commcaresupportlibrary.identity.BiometricIdentifier;
 
 import java.io.IOException;
 import java.util.List;
@@ -100,10 +100,8 @@ public class OmniMatchUtil {
 
         if (createTemplateResponse.getResultCode() == Common.ResultCode.Success) {
             TemplateCreatorCommon.CreateTemplateResult createTemplateResult = createTemplateResponse.getResultsList().get(0);
-            String batchIdentifier = createTemplateResult.getTemplateResult().getBatchIdentifier().getId();
-            int fingerPosition = Integer.parseInt(batchIdentifier);
             BioCommon.Template template = createTemplateResult.getTemplateResult().getTemplate();
-            return createMatcherTemplate(template, fingerPosition);
+            return createMatcherTemplate(template, position);
         }
         return null;
     }
@@ -134,30 +132,30 @@ public class OmniMatchUtil {
         return matcherTemplateBuilder.build();
     }
 
-    public static BiometricUtils.BiometricIdentifier getBiometricIdentifierFromPosition(FingerCommon.NistFingerPosition fingerPosition) {
+    public static BiometricIdentifier getBiometricIdentifierFromPosition(FingerCommon.NistFingerPosition fingerPosition) {
         switch (fingerPosition) {
             case LeftIndexFinger:
-                return BiometricUtils.BiometricIdentifier.LEFT_INDEX_FINGER;
+                return BiometricIdentifier.LEFT_INDEX_FINGER;
             case LeftMiddleFinger:
-                return BiometricUtils.BiometricIdentifier.LEFT_MIDDLE_FINGER;
+                return BiometricIdentifier.LEFT_MIDDLE_FINGER;
             case LeftRingFinger:
-                return BiometricUtils.BiometricIdentifier.LEFT_RING_FINGER;
+                return BiometricIdentifier.LEFT_RING_FINGER;
             case LeftLittleFinger:
-                return BiometricUtils.BiometricIdentifier.LEFT_PINKY_FINGER;
+                return BiometricIdentifier.LEFT_PINKY_FINGER;
             case LeftThumb:
-                return BiometricUtils.BiometricIdentifier.LEFT_THUMB;
+                return BiometricIdentifier.LEFT_THUMB;
             case RightIndexFinger:
-                return BiometricUtils.BiometricIdentifier.RIGHT_INDEX_FINGER;
+                return BiometricIdentifier.RIGHT_INDEX_FINGER;
             case RightMiddleFinger:
-                return BiometricUtils.BiometricIdentifier.RIGHT_MIDDLE_FINGER;
+                return BiometricIdentifier.RIGHT_MIDDLE_FINGER;
             case RightRingFinger:
-                return BiometricUtils.BiometricIdentifier.RIGHT_RING_FINGER;
+                return BiometricIdentifier.RIGHT_RING_FINGER;
             case RightLittleFinger:
-                return BiometricUtils.BiometricIdentifier.RIGHT_PINKY_FINGER;
+                return BiometricIdentifier.RIGHT_PINKY_FINGER;
             case RightThumb:
-                return BiometricUtils.BiometricIdentifier.RIGHT_THUMB;
+                return BiometricIdentifier.RIGHT_THUMB;
             default:
-                return BiometricUtils.BiometricIdentifier.FACE;
+                return BiometricIdentifier.FACE;
         }
     }
 
@@ -165,8 +163,8 @@ public class OmniMatchUtil {
      * Gets the finger position that OmniMatch uses to index fingers. This is necessary as the ordinals
      * from BiometricIdentifier are different and so, using these will cause a position error when using OmniMatch
      */
-    public static int getOmniPosition(BiometricUtils.BiometricIdentifier identifier) {
-        if (identifier == BiometricUtils.BiometricIdentifier.FACE) {
+    public static int getOmniPosition(BiometricIdentifier identifier) {
+        if (identifier == BiometricIdentifier.FACE) {
             return 0;
         }
         return identifier.ordinal() + 1;
