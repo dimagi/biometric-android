@@ -23,18 +23,12 @@ import Tech5.OmniMatch.Matcher;
 import Tech5.OmniMatch.MatcherCommon;
 
 public class SearchActivity extends BaseActivity {
-    private String templatePropName = ParamConstants.TEMPLATE_PROP_NAME_DEFAULT;
     private float acceptanceThreshold = ParamConstants.ACCEPTANCE_THRESHOLD_DEFAULT;
-    private final String TAG = "BIOMETRIC";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        String propName = intent.getStringExtra(ParamConstants.TEMPLATE_PROP_NAME);
-        if (propName != null) {
-            templatePropName = propName;
-        }
         acceptanceThreshold = intent.getFloatExtra(
                 ParamConstants.ACCEPTANCE_THRESHOLD_NAME, ParamConstants.ACCEPTANCE_THRESHOLD_DEFAULT
         );
