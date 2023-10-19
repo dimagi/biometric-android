@@ -28,8 +28,6 @@ public class ParamConstants {
     public static final SegmentationMode SEGMENTATION_MODE_DEFAULT = SegmentationMode.SEGMENTATION_MODE_LEFT_AND_RIGHT_THUMBS;
     public static final String TIMEOUT_SECS_NAME = "timeout_secs";
     public static final int TIMEOUT_SECS_DEFAULT = 30;
-    public static final String TEMPLATE_PROP_NAME = "template_prop_name";
-    public static final String TEMPLATE_PROP_NAME_DEFAULT = "bio_template";
     public static final String ACCEPTANCE_THRESHOLD_NAME = "acceptance_threshold";
     public static final float ACCEPTANCE_THRESHOLD_DEFAULT = 4.0f;
 }

@@ -1,9 +1,11 @@
 package com.dimagi.biometric.activities;
 
+import com.dimagi.biometric.OmniMatchUtil;
 import com.dimagi.biometric.ParamConstants;
 import com.dimagi.biometric.R;
 
 import org.commcare.commcaresupportlibrary.CaseUtils;
+import org.commcare.commcaresupportlibrary.identity.BiometricIdentifier;
 import org.commcare.commcaresupportlibrary.identity.IdentityResponseBuilder;
 import org.commcare.commcaresupportlibrary.identity.model.IdentificationMatch;
 import org.commcare.commcaresupportlibrary.identity.model.MatchResult;
@@ -12,28 +14,21 @@ import org.commcare.commcaresupportlibrary.identity.model.MatchStrength;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
-
 
 import java.util.ArrayList;
 
 import Tech5.OmniMatch.BioCommon;
+import Tech5.OmniMatch.FingerCommon;
 import Tech5.OmniMatch.Matcher;
 import Tech5.OmniMatch.MatcherCommon;
 
 public class SearchActivity extends BaseActivity {
-    private String templatePropName = ParamConstants.TEMPLATE_PROP_NAME_DEFAULT;
     private float acceptanceThreshold = ParamConstants.ACCEPTANCE_THRESHOLD_DEFAULT;
-    private final String TAG = "BIOMETRIC";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        String propName = intent.getStringExtra(ParamConstants.TEMPLATE_PROP_NAME);
-        if (propName != null) {
-            templatePropName = propName;
-        }
         acceptanceThreshold = intent.getFloatExtra(
                 ParamConstants.ACCEPTANCE_THRESHOLD_NAME, ParamConstants.ACCEPTANCE_THRESHOLD_DEFAULT
         );
@@ -41,7 +36,8 @@ public class SearchActivity extends BaseActivity {
 
     @Override
     protected void onCaptureSuccess(MatcherCommon.Record activeRecord) {
-        fetchCaseData();
+        ArrayList<BiometricIdentifier> bioIds = getBiometricIdentifiers(activeRecord);
+        fetchCaseData(bioIds);
         Matcher.RecordsResult result = templateViewModel.identifyRecord(activeRecord, acceptanceThreshold, 5);
         ArrayList<IdentificationMatch> identifications = getIdentificationsFromResult(result);
         IdentityResponseBuilder.identificationResponse(identifications).finalizeResponse(this);
@@ -49,10 +45,29 @@ public class SearchActivity extends BaseActivity {
 
     @Override
     protected void onCaptureCancelled() {
-        finishWorkflow(new ArrayList<>());
+        ArrayList<IdentificationMatch> identifications = new ArrayList<>();
+        identifications.add(new IdentificationMatch(caseId, new MatchResult(0, MatchStrength.ONE_STAR)));
+        IdentityResponseBuilder.identificationResponse(identifications).finalizeResponse(this);
     }
 
-    private void fetchCaseData() {
+    /**
+     * This function retrieves which biometric identifiers were used for capture and returns this as
+     * an array. This is used to identify which case properties to look for when fetching biometric case data
+     */
+    private ArrayList<BiometricIdentifier> getBiometricIdentifiers(MatcherCommon.Record record) {
+        ArrayList<BiometricIdentifier> biometricIdentifiers = new ArrayList<>();
+        if (biometricType == BioCommon.BioType.Face) {
+            biometricIdentifiers.add(BiometricIdentifier.FACE);
+        } else {
+            for (BioCommon.MatcherTemplate fingerTemplate : record.getNnFingersList()) {
+                BiometricIdentifier bioId = OmniMatchUtil.getBiometricIdentifierFromPosition(FingerCommon.NistFingerPosition.values()[fingerTemplate.getPosition()]);
+                biometricIdentifiers.add(bioId);
+            }
+        }
+        return biometricIdentifiers;
+    }
+
+    private void fetchCaseData(ArrayList<BiometricIdentifier> bioIds) {
         Cursor caseCursor = CaseUtils.getCaseMetaData(this);
         while (caseCursor.moveToNext()) {
             int colIndex = caseCursor.getColumnIndex(CASE_ID_PARAM);
@@ -60,27 +75,31 @@ public class SearchActivity extends BaseActivity {
                 continue;
             }
             String caseIdProp = caseCursor.getString(colIndex);
-            String rawTemplateStr = CaseUtils.getCaseProperty(this, caseIdProp, templatePropName);
-            if (rawTemplateStr == null) {
-                continue;
-            }
-
-            try {
-                MatcherCommon.Record record = templateViewModel.getRecordFromTemplateStr(rawTemplateStr);
-                templateViewModel.insertRecord(record, caseIdProp);
-            } catch (NullPointerException e) {
-                Log.e(TAG, "Null pointer exception on creating record: " + e);
-            }
+            processCaseData(caseIdProp, bioIds);
         }
     }
 
-    private void finishWorkflow(ArrayList<IdentificationMatch> identifications) {
-        if (identifications.size() == 0) {
-            identifications.add(
-                    new IdentificationMatch(caseId, new MatchResult(0, MatchStrength.ONE_STAR))
-            );
+    /**
+     * Go through cases in CommCare and insert records, retrieving only templates that were used in capture
+     */
+    private void processCaseData(String caseIdProp, ArrayList<BiometricIdentifier> bioIds) {
+        ArrayList<BioCommon.MatcherTemplate> templateList = new ArrayList<>();
+        for (BiometricIdentifier bioId : bioIds) {
+            String templateStr = CaseUtils.getCaseProperty(this, caseIdProp, bioId.getCalloutResponseKey());
+            if (templateStr == null) {
+                continue;
+            }
+
+            BioCommon.MatcherTemplate template = templateViewModel.getMatcherTemplateFromStr(templateStr, bioId);
+            if (template != null) {
+                templateList.add(template);
+            }
         }
-        IdentityResponseBuilder.identificationResponse(identifications).finalizeResponse(this);
+
+        if (templateList.size() > 0) {
+            MatcherCommon.Record record = templateViewModel.createRecord(templateList);
+            templateViewModel.insertRecord(record, caseIdProp);
+        }
     }
 
     private ArrayList<IdentificationMatch> getIdentificationsFromResult(Matcher.RecordsResult result) {

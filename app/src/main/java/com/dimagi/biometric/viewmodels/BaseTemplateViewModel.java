@@ -6,15 +6,14 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import android.util.Base64;
 
 import com.dimagi.biometric.OmniMatchUtil;
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import org.commcare.commcaresupportlibrary.BiometricUtils;
+import org.commcare.commcaresupportlibrary.identity.BiometricIdentifier;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import Tech5.OmniMatch.BioCommon;
 import Tech5.OmniMatch.Common;
@@ -59,18 +58,9 @@ public abstract class BaseTemplateViewModel extends AndroidViewModel {
 
     public abstract BioCommon.MatcherTemplate bytesToTemplate(byte[] templateData, int position);
 
-    public MatcherCommon.Record getRecordFromTemplateStr(String rawTemplateStr) {
-        Map<BiometricUtils.BiometricIdentifier, byte[]> templateDataList = BiometricUtils.convertBase64StringTemplatesToByteArray(rawTemplateStr);
-        if (templateDataList == null) {
-            return null;
-        }
-
-        List<BioCommon.MatcherTemplate> templateList = new ArrayList<>();
-        for (Map.Entry<BiometricUtils.BiometricIdentifier, byte[]> templateItem : templateDataList.entrySet()) {
-            int position = OmniMatchUtil.getOmniPosition(templateItem.getKey());
-            BioCommon.MatcherTemplate template = bytesToTemplate(templateItem.getValue(), position);
-            templateList.add(template);
-        }
-        return createRecord(templateList);
+    public BioCommon.MatcherTemplate getMatcherTemplateFromStr(String rawTemplateStr, BiometricIdentifier bioIdentifier) {
+        byte[] templateData = Base64.decode(rawTemplateStr, Base64.DEFAULT);
+        int position = OmniMatchUtil.getOmniPosition(bioIdentifier);
+        return bytesToTemplate(templateData, position);
     }
 }

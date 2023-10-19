@@ -8,11 +8,13 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.dimagi.biometric.OmniMatchUtil;
 import com.dimagi.biometric.fragments.FaceMatchFragment;
 import com.dimagi.biometric.fragments.FingerMatchFragment;
 import com.dimagi.biometric.viewmodels.BaseTemplateViewModel;
@@ -21,9 +23,11 @@ import com.dimagi.biometric.viewmodels.FingerMatchViewModel;
 import com.dimagi.biometric.viewmodels.LicenseViewModel;
 import com.dimagi.biometric.R;
 
+import org.commcare.commcaresupportlibrary.identity.BiometricIdentifier;
 import org.commcare.commcaresupportlibrary.identity.model.MatchStrength;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import Tech5.OmniMatch.BioCommon;
 import Tech5.OmniMatch.MatcherCommon;
@@ -37,6 +41,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected BioCommon.BioType biometricType;
     protected String caseId;
     protected String templateStr;
+    protected MatcherCommon.Record templateRecord = null;
+
     private final String MATCH_FRAGMENT_TAG = "matchFragment";
 
     private LicenseViewModel licenseViewModel;
@@ -86,6 +92,34 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         caseId = intent.getStringExtra(CASE_ID_PARAM);
         templateStr = intent.getStringExtra(TEMPLATE_PARAM);
+    }
+
+    protected MatcherCommon.Record parseBiometricTemplates() {
+        Intent intent = getIntent();
+        List<BioCommon.MatcherTemplate> templateList = new ArrayList<>();
+        if (biometricType == BioCommon.BioType.Face) {
+            String templateStr = intent.getStringExtra(BiometricIdentifier.FACE.getCalloutResponseKey());
+            BioCommon.MatcherTemplate faceTemplate = templateViewModel.getMatcherTemplateFromStr(templateStr, BiometricIdentifier.FACE);
+            templateList.add(faceTemplate);
+        } else {
+            for (BiometricIdentifier bioId : BiometricIdentifier.values()) {
+                if (bioId == BiometricIdentifier.FACE) {
+                    continue;
+                }
+                String templateStr = intent.getStringExtra(bioId.getCalloutResponseKey());
+                if (templateStr != null) {
+                    byte[] templateData = Base64.decode(templateStr, Base64.DEFAULT);
+                    int position = OmniMatchUtil.getOmniPosition(bioId);
+                    BioCommon.MatcherTemplate template = templateViewModel.bytesToTemplate(templateData, position);
+                    templateList.add(template);
+                }
+            }
+        }
+
+        if (templateList.size() > 0) {
+            return templateViewModel.createRecord(templateList);
+        }
+        return null;
     }
 
     private void insertFragmentArgs(Fragment fragment) {

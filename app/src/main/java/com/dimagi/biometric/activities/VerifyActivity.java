@@ -13,12 +13,9 @@ import Tech5.OmniMatch.MatcherCommon;
 public class VerifyActivity extends BaseActivity {
     @Override
     protected void onCaptureSuccess(MatcherCommon.Record activeRecord) {
-        if (templateStr == null) {
-            return;
-        }
-        MatcherCommon.Record caseRecord = templateViewModel.getRecordFromTemplateStr(templateStr);
-        if (caseRecord != null) {
-            templateViewModel.insertRecord(caseRecord, caseId);
+        templateRecord = parseBiometricTemplates();
+        if (templateRecord != null) {
+            templateViewModel.insertRecord(templateRecord, caseId);
         }
         float score = templateViewModel.verifyRecord(activeRecord, caseId);
         finalizeResponse(score);
@@ -42,9 +39,6 @@ public class VerifyActivity extends BaseActivity {
         ArrayList<String> errors = new ArrayList<>();
         if (caseId == null) {
             errors.add(getText(R.string.missing_case_id).toString());
-        }
-        if (templateStr == null) {
-            errors.add(getText(R.string.missing_template_str).toString());
         }
         return errors;
     }
