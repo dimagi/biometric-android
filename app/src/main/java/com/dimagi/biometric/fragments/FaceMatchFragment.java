@@ -43,7 +43,7 @@ public class FaceMatchFragment extends BaseMatchFragment implements FaceCaptureL
         ParamManager params = getParams();
 
         FaceCaptureController controller = FaceCaptureController.getInstance();
-        controller.setUseBackCamera(false);
+        controller.setUseBackCamera(params.getUseBackCamera());
         controller.setAutoCapture(params.getAutoCaptureEnabled());
         controller.setCaptureTimeoutInSecs(params.getTimeoutSecs());
 
@@ -134,6 +134,9 @@ public class FaceMatchFragment extends BaseMatchFragment implements FaceCaptureL
         ));
         params.setAutoCaptureEnabled(safeParseBool(
                 intent.getStringExtra(ParamConstants.AUTO_CAPTURE_ENABLED_NAME), ParamConstants.AUTO_CAPTURE_ENABLED_DEFAULT
+        ));
+        params.setUseBackCamera(safeParseBool(
+                intent.getStringExtra(ParamConstants.USE_BACK_CAMERA_NAME), ParamConstants.USE_BACK_CAMERA_DEFAULT
         ));
         return params;
     }
