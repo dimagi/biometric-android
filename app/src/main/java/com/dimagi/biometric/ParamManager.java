@@ -20,6 +20,7 @@ public class ParamManager {
     private float detectorThreshold = ParamConstants.DETECTOR_THRESHOLD_DEFAULT;
     private int timeoutSecs = ParamConstants.TIMEOUT_SECS_DEFAULT;
     private SegmentationMode segmentationMode = ParamConstants.SEGMENTATION_MODE_DEFAULT;
+    private boolean useBackCamera = ParamConstants.USE_BACK_CAMERA_DEFAULT;
 
     private int clampValue(int val, int min, int max) {
         return Math.max(min, Math.min(max, val));
@@ -151,4 +152,13 @@ public class ParamManager {
     public SegmentationMode getSegmentationMode() {
         return segmentationMode;
     }
+
+    public void setUseBackCamera(boolean useBackCamera) {
+        this.useBackCamera = useBackCamera;
+    }
+
+    public boolean getUseBackCamera() {
+        return useBackCamera;
+    }
+
 }
