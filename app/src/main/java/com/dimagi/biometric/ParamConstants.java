@@ -30,4 +30,7 @@ public class ParamConstants {
     public static final int TIMEOUT_SECS_DEFAULT = 30;
     public static final String ACCEPTANCE_THRESHOLD_NAME = "acceptance_threshold";
     public static final float ACCEPTANCE_THRESHOLD_DEFAULT = 4.0f;
+    // This parameter is only applicable to face capture
+    public static final String USE_BACK_CAMERA_NAME = "use_back_camera";
+    public static final boolean USE_BACK_CAMERA_DEFAULT = false;
 }
