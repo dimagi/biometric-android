@@ -86,7 +86,7 @@ public class SearchActivity extends BaseActivity {
         ArrayList<BioCommon.MatcherTemplate> templateList = new ArrayList<>();
         for (BiometricIdentifier bioId : bioIds) {
             String templateStr = CaseUtils.getCaseProperty(this, caseIdProp, bioId.getCalloutResponseKey());
-            if (templateStr == null) {
+            if (templateStr == null || templateStr.equals("")) {
                 continue;
             }
 
