@@ -52,7 +52,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected abstract void onCaptureSuccess(MatcherCommon.Record activeRecord);
     protected abstract void onCaptureCancelled();
-    protected abstract ArrayList<String> validateRequiredParams();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -237,6 +236,14 @@ public abstract class BaseActivity extends AppCompatActivity {
             errorStr.append(error).append("\n");
         }
         return errorStr.toString();
+    }
+
+    private ArrayList<String> validateRequiredParams() {
+        ArrayList<String> errors = new ArrayList<>();
+        if (caseId == null) {
+            errors.add(getText(R.string.missing_case_id).toString());
+        }
+        return errors;
     }
 }
 

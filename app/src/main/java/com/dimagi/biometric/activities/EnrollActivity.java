@@ -38,13 +38,4 @@ public class EnrollActivity extends BaseActivity {
         Map<BiometricIdentifier, byte[]> templateDataList = new HashMap<>();
         IdentityResponseBuilder.registrationResponse(caseId, templateDataList).finalizeResponse(this);
     }
-
-    @Override
-    protected ArrayList<String> validateRequiredParams() {
-        ArrayList<String> errors = new ArrayList<>();
-        if (caseId == null) {
-            errors.add(getText(R.string.missing_case_id).toString());
-        }
-        return errors;
-    }
 }

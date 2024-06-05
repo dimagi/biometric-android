@@ -33,13 +33,4 @@ public class VerifyActivity extends BaseActivity {
                 caseId, new MatchResult(confidencePercentage, matchStrength)
         ).finalizeResponse(this);
     }
-
-    @Override
-    protected ArrayList<String> validateRequiredParams() {
-        ArrayList<String> errors = new ArrayList<>();
-        if (caseId == null) {
-            errors.add(getText(R.string.missing_case_id).toString());
-        }
-        return errors;
-    }
 }
