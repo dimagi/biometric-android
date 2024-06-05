@@ -243,6 +243,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (caseId == null) {
             errors.add(getText(R.string.missing_case_id).toString());
         }
+        if (projectId == null) {
+            errors.add(getText(R.string.missing_project_id).toString());
+        }
         return errors;
     }
 }
