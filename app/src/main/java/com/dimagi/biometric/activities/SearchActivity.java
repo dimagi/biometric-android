@@ -1,8 +1,11 @@
 package com.dimagi.biometric.activities;
 
+import android.content.Intent;
+import android.database.Cursor;
+import android.os.Bundle;
+
 import com.dimagi.biometric.OmniMatchUtil;
 import com.dimagi.biometric.ParamConstants;
-import com.dimagi.biometric.R;
 
 import org.commcare.commcaresupportlibrary.CaseUtils;
 import org.commcare.commcaresupportlibrary.identity.BiometricIdentifier;
@@ -10,10 +13,6 @@ import org.commcare.commcaresupportlibrary.identity.IdentityResponseBuilder;
 import org.commcare.commcaresupportlibrary.identity.model.IdentificationMatch;
 import org.commcare.commcaresupportlibrary.identity.model.MatchResult;
 import org.commcare.commcaresupportlibrary.identity.model.MatchStrength;
-
-import android.content.Intent;
-import android.database.Cursor;
-import android.os.Bundle;
 
 import java.util.ArrayList;
 

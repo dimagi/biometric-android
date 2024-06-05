@@ -1,12 +1,8 @@
 package com.dimagi.biometric.activities;
 
-import com.dimagi.biometric.R;
-
 import org.commcare.commcaresupportlibrary.identity.IdentityResponseBuilder;
 import org.commcare.commcaresupportlibrary.identity.model.MatchResult;
 import org.commcare.commcaresupportlibrary.identity.model.MatchStrength;
-
-import java.util.ArrayList;
 
 import Tech5.OmniMatch.MatcherCommon;
 

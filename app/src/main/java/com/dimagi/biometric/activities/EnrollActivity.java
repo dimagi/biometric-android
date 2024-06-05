@@ -1,12 +1,10 @@
 package com.dimagi.biometric.activities;
 
 import com.dimagi.biometric.OmniMatchUtil;
-import com.dimagi.biometric.R;
 
 import org.commcare.commcaresupportlibrary.identity.BiometricIdentifier;
 import org.commcare.commcaresupportlibrary.identity.IdentityResponseBuilder;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
