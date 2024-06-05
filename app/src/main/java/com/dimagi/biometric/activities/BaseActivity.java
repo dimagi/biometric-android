@@ -38,6 +38,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     final protected String CASE_ID_PARAM = "case_id";
     final protected String BIOMETRIC_TYPE_PARAM = "biometric_type";
     final protected String TEMPLATE_PARAM = "template";
+    final protected String PROJECT_ID_PARAM = "project_id";
     protected BioCommon.BioType biometricType;
     protected String caseId;
     protected String templateStr;
@@ -47,6 +48,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private LicenseViewModel licenseViewModel;
     protected BaseTemplateViewModel templateViewModel;
+    protected String projectId;
 
     protected abstract void onCaptureSuccess(MatcherCommon.Record activeRecord);
     protected abstract void onCaptureCancelled();
@@ -92,6 +94,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         caseId = intent.getStringExtra(CASE_ID_PARAM);
         templateStr = intent.getStringExtra(TEMPLATE_PARAM);
+        projectId = intent.getStringExtra(PROJECT_ID_PARAM);
     }
 
     protected MatcherCommon.Record parseBiometricTemplates() {
