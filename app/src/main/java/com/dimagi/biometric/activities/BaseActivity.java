@@ -35,6 +35,7 @@ import Tech5.OmniMatch.MatcherCommon;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
+    public static final String ERROR_MESSAGES_BUNDLE_KEY = "errors";
     final protected String CASE_ID_PARAM = "case_id";
     final protected String BIOMETRIC_TYPE_PARAM = "biometric_type";
     final protected String TEMPLATE_PARAM = "template";
@@ -129,7 +130,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (errors.size() > 0) {
             Bundle args = new Bundle();
             String errorStr = createErrorStr(errors);
-            args.putString("errors", errorStr);
+            args.putString(ERROR_MESSAGES_BUNDLE_KEY, errorStr);
             fragment.setArguments(args);
         }
     }
