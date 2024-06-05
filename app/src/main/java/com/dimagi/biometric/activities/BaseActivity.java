@@ -68,7 +68,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         Button retryButton = findViewById(R.id.retry_init_button);
         retryButton.setOnClickListener(v -> {
             toggleRetryButton(false);
-            licenseViewModel.initSDK(this);
+            licenseViewModel.initSDK(this, projectId);
         });
 
         getIntentParams();
@@ -184,7 +184,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
         });
 
-        licenseViewModel.initSDK(BaseActivity.this);
+        licenseViewModel.initSDK(BaseActivity.this, projectId);
     }
 
     protected MatchStrength getMatchStrength(float score) {

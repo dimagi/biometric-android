@@ -30,6 +30,7 @@ import Tech5.OmniMatch.JNI.OmniMatchException;
 public class LicenseViewModel extends AndroidViewModel {
 
     private static final String TAG = "BIOMETRIC";
+    private static final String PROJECT_ID_FOR_TESTING = "TEST";
 
     private final Application application;
 
@@ -55,11 +56,11 @@ public class LicenseViewModel extends AndroidViewModel {
 
     public LiveData<initStatus> getStatus() { return status; }
 
-    public void initSDK(Context context) {
+    public void initSDK(Context context, String projectId) {
 
         new Thread(() -> {
             statusMessage.postValue(application.getResources().getString(R.string.omnimatch_initializing));
-            boolean isSDKInitialized = loadLicense(context);
+            boolean isSDKInitialized = loadLicense(context, projectId);
             if (isSDKInitialized) {
                 status.postValue(initStatus.SUCCESS);
             } else {
@@ -69,7 +70,7 @@ public class LicenseViewModel extends AndroidViewModel {
         }).start();
     }
 
-    private boolean loadLicense(Context context) {
+    private boolean loadLicense(Context context, String projectId) {
         int resultCode;
         try {
             CoreNative coreNative = new CoreNative();
@@ -84,7 +85,7 @@ public class LicenseViewModel extends AndroidViewModel {
                     return false;
                 }
 
-                String url = "https://pheonix-lic.tech5.tech/license/" + application.getApplicationContext().getPackageName() + "/" + Math.abs(resultCode);
+                String url = "https://pheonix-lic.tech5.tech/license/" + application.getApplicationContext().getPackageName() + getUrlDomainSuffix(projectId) + "/" + Math.abs(resultCode);
                 String token = sendHttpRequest(url);
                 if (token == null) {
                     throw new IOException();
@@ -100,6 +101,14 @@ public class LicenseViewModel extends AndroidViewModel {
         }
 
         return (resultCode == 0);
+    }
+
+    private String getUrlDomainSuffix(String projectId) {
+        if (projectId.equalsIgnoreCase(PROJECT_ID_FOR_TESTING)) {
+            return "";
+        } else {
+            return "." + projectId.toLowerCase();
+        }
     }
 
     private String sendHttpRequest(String urlString) throws IOException {
