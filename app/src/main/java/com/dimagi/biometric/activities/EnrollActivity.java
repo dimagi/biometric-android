@@ -1,12 +1,10 @@
 package com.dimagi.biometric.activities;
 
 import com.dimagi.biometric.OmniMatchUtil;
-import com.dimagi.biometric.R;
 
 import org.commcare.commcaresupportlibrary.identity.BiometricIdentifier;
 import org.commcare.commcaresupportlibrary.identity.IdentityResponseBuilder;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,14 +35,5 @@ public class EnrollActivity extends BaseActivity {
     protected void onCaptureCancelled() {
         Map<BiometricIdentifier, byte[]> templateDataList = new HashMap<>();
         IdentityResponseBuilder.registrationResponse(caseId, templateDataList).finalizeResponse(this);
-    }
-
-    @Override
-    protected ArrayList<String> validateRequiredParams() {
-        ArrayList<String> errors = new ArrayList<>();
-        if (caseId == null) {
-            errors.add(getText(R.string.missing_case_id).toString());
-        }
-        return errors;
     }
 }

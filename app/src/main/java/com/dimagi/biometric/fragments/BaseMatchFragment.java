@@ -30,6 +30,8 @@ import com.dimagi.biometric.R;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.dimagi.biometric.activities.BaseActivity.ERROR_MESSAGES_BUNDLE_KEY;
+
 /**
  * A base class to contain common functionality for both the face and finger match fragments.
  */
@@ -82,7 +84,7 @@ public abstract class BaseMatchFragment extends Fragment {
     private void handleStartButtonValidation(Bundle args, @NonNull View view) {
         String errors = null;
         if (args != null) {
-            errors = args.getString("errors");
+            errors = args.getString(ERROR_MESSAGES_BUNDLE_KEY);
         }
         Button startButton = view.findViewById(R.id.start_capture_button);
         if (errors == null) {

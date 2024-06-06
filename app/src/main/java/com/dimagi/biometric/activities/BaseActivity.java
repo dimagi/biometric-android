@@ -35,9 +35,11 @@ import Tech5.OmniMatch.MatcherCommon;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
+    public static final String ERROR_MESSAGES_BUNDLE_KEY = "errors";
     final protected String CASE_ID_PARAM = "case_id";
     final protected String BIOMETRIC_TYPE_PARAM = "biometric_type";
     final protected String TEMPLATE_PARAM = "template";
+    final protected String PROJECT_ID_PARAM = "project_id";
     protected BioCommon.BioType biometricType;
     protected String caseId;
     protected String templateStr;
@@ -47,10 +49,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private LicenseViewModel licenseViewModel;
     protected BaseTemplateViewModel templateViewModel;
+    protected String projectId;
 
     protected abstract void onCaptureSuccess(MatcherCommon.Record activeRecord);
     protected abstract void onCaptureCancelled();
-    protected abstract ArrayList<String> validateRequiredParams();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +69,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         Button retryButton = findViewById(R.id.retry_init_button);
         retryButton.setOnClickListener(v -> {
             toggleRetryButton(false);
-            licenseViewModel.initSDK(this);
+            licenseViewModel.initSDK(this, projectId);
         });
 
         getIntentParams();
@@ -92,6 +94,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         caseId = intent.getStringExtra(CASE_ID_PARAM);
         templateStr = intent.getStringExtra(TEMPLATE_PARAM);
+        projectId = intent.getStringExtra(PROJECT_ID_PARAM);
     }
 
     protected MatcherCommon.Record parseBiometricTemplates() {
@@ -127,7 +130,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (errors.size() > 0) {
             Bundle args = new Bundle();
             String errorStr = createErrorStr(errors);
-            args.putString("errors", errorStr);
+            args.putString(ERROR_MESSAGES_BUNDLE_KEY, errorStr);
             fragment.setArguments(args);
         }
     }
@@ -182,7 +185,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
         });
 
-        licenseViewModel.initSDK(BaseActivity.this);
+        licenseViewModel.initSDK(BaseActivity.this, projectId);
     }
 
     protected MatchStrength getMatchStrength(float score) {
@@ -234,6 +237,23 @@ public abstract class BaseActivity extends AppCompatActivity {
             errorStr.append(error).append("\n");
         }
         return errorStr.toString();
+    }
+
+    private ArrayList<String> validateRequiredParams() {
+        ArrayList<String> errors = new ArrayList<>();
+        if (caseId == null) {
+            errors.add(getText(R.string.missing_case_id).toString());
+        }
+        if (projectId == null) {
+            errors.add(getText(R.string.missing_project_id).toString());
+        } else if (hasSpaces(projectId)) {
+            errors.add(getText(R.string.invalid_project_id).toString());
+        }
+        return errors;
+    }
+
+    private boolean hasSpaces(String text) {
+        return text.contains(" ");
     }
 }
 
