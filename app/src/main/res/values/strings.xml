@@ -12,6 +12,7 @@
     <string name="missing_case_id">Missing required \"case_id\" input parameter.</string>
     <string name="missing_project_id">Missing required \"project_id\" input parameter.</string>
     <string name="missing_template_str">Missing required \"template\" input parameter.</string>
+    <string name="invalid_project_id">project_id cannot contain blank spaces</string>
 
     <string name="permission_rationale">This app requires the Camera and CommCare Read permissions in order to do biometric capture and matching.</string>
     <string name="permission_settings">You will need to navigate to the app settings to enable the required permissions.</string>

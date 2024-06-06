@@ -246,8 +246,14 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         if (projectId == null) {
             errors.add(getText(R.string.missing_project_id).toString());
+        } else if (hasSpaces(projectId)) {
+            errors.add(getText(R.string.invalid_project_id).toString());
         }
         return errors;
+    }
+
+    private boolean hasSpaces(String text) {
+        return text.contains(" ");
     }
 }
 
