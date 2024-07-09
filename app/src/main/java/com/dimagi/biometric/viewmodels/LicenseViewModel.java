@@ -104,7 +104,7 @@ public class LicenseViewModel extends AndroidViewModel {
     }
 
     private String getUrlDomainSuffix(String projectId) {
-        if (PROJECT_ID_FOR_TESTING.equalsIgnoreCase(projectId)) {
+        if (projectId == null || PROJECT_ID_FOR_TESTING.equalsIgnoreCase(projectId)) {
             return "";
         } else {
             return "." + projectId.toLowerCase();
