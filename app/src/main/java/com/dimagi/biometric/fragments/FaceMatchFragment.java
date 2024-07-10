@@ -47,6 +47,13 @@ public class FaceMatchFragment extends BaseMatchFragment implements FaceCaptureL
         controller.setAutoCapture(params.getAutoCaptureEnabled());
         controller.setCaptureTimeoutInSecs(params.getTimeoutSecs());
 
+        AirsnapFaceThresholds thresholds = getAirsnapFaceThresholds(params);
+        controller.setAirsnapFaceThresholds(thresholds);
+        controller.startFaceCapture("", requireContext(), this);
+    }
+
+    @NonNull
+    private static AirsnapFaceThresholds getAirsnapFaceThresholds(ParamManager params) {
         AirsnapFaceThresholds thresholds = new AirsnapFaceThresholds();
         thresholds.setPITCH_THRESHOLD(params.getPitch());
         thresholds.setYAW_THRESHOLD(params.getYaw());
@@ -56,9 +63,7 @@ public class FaceMatchFragment extends BaseMatchFragment implements FaceCaptureL
         thresholds.setEYE_CLOSE_THRESHOLD(params.getEyesClosed());
         thresholds.setBRISQUE_THRESHOLD(params.getBrisque());
         thresholds.setFaceCentreToImageCentreTolerance(params.getImageCenterTolerance());
-
-        controller.setAirsnapFaceThresholds(thresholds);
-        controller.startFaceCapture("", requireContext(), this);
+        return thresholds;
     }
 
     @Override
