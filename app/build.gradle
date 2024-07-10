@@ -1,13 +1,35 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 plugins {
     id 'com.android.application'
-
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
+}
+
+ext {
+    // Obtained from ~/.gradle/gradle.properties on build server (mobile agent), or your local
+    // ~/.gradle/gradle.properties file, or loads default empty strings if neither is present
+    RELEASE_STORE_FILE = project.properties['RELEASE_STORE_FILE'] ?: "."
+    RELEASE_STORE_PASSWORD = project.properties['RELEASE_STORE_PASSWORD'] ?: ""
+    RELEASE_KEY_ALIAS = project.properties['RELEASE_KEY_ALIAS'] ?: ""
+    RELEASE_KEY_PASSWORD = project.properties['RELEASE_KEY_PASSWORD'] ?: ""
+    GOOGLE_PLAY_MAPS_API_KEY = project.properties['GOOGLE_PLAY_MAPS_API_KEY'] ?: ""
+    GOOGLE_SERVICES_API_KEY = project.properties['GOOGLE_SERVICES_API_KEY'] ?: ""
+    FIREBASE_DATABASE_URL = project.properties['FIREBASE_DATABASE_URL'] ?: ''
 }
 
 android {
     namespace 'com.dimagi.biometric'
     compileSdk 33
+
+    signingConfigs {
+        release {
+            storeFile file(project.ext.RELEASE_STORE_FILE)
+            storePassword project.ext.RELEASE_STORE_PASSWORD
+            keyAlias project.ext.RELEASE_KEY_ALIAS
+            keyPassword project.ext.RELEASE_KEY_PASSWORD
+        }
+    }
 
     defaultConfig {
         applicationId "com.dimagi.biometric"
@@ -86,3 +108,20 @@ dependencies {
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-analytics")
 }
+
+afterEvaluate {
+    processDebugGoogleServices.dependsOn injectGoogleServicesAPIKey
+    processReleaseGoogleServices.dependsOn injectGoogleServicesAPIKey
+}
+
+tasks.register('injectGoogleServicesAPIKey') {
+    description = 'Injects the Google Services API key into the google-services.json file at runtime'
+    copy {
+        from file("templates/google-services.json")
+        filter(ReplaceTokens, tokens: [apiKey             : project.ext.GOOGLE_SERVICES_API_KEY,
+                                       firebaseDatabaseUrl: project.ext.FIREBASE_DATABASE_URL])
+        into projectDir
+    }
+}
+
+apply plugin: 'com.google.gms.google-services'
