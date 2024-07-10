@@ -33,7 +33,6 @@
         android:textSize="20sp" />
 
     <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/foobar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
