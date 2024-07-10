@@ -141,7 +141,7 @@ public class LicenseViewModel extends AndroidViewModel {
             // Device may be connected to a network but without Internet, so we need to ping a site to verify an
             // actual Internet connection
             InetAddress ipAddr = InetAddress.getByName("commcarehq.org");
-            return netInfo != null && netInfo.isConnectedOrConnecting() && !ipAddr.toString().equals("");
+            return netInfo != null && netInfo.isConnectedOrConnecting() && !ipAddr.toString().isEmpty();
         } catch (UnknownHostException e) {
             return false;
         }
