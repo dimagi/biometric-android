@@ -119,7 +119,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
         }
 
-        if (templateList.size() > 0) {
+        if (!templateList.isEmpty()) {
             return templateViewModel.createRecord(templateList);
         }
         return null;
@@ -127,7 +127,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private void insertFragmentArgs(Fragment fragment) {
         ArrayList<String> errors = validateRequiredParams();
-        if (errors.size() > 0) {
+        if (!errors.isEmpty()) {
             Bundle args = new Bundle();
             String errorStr = createErrorStr(errors);
             args.putString(ERROR_MESSAGES_BUNDLE_KEY, errorStr);

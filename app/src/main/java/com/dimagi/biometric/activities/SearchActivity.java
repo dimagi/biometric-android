@@ -85,7 +85,7 @@ public class SearchActivity extends BaseActivity {
         ArrayList<BioCommon.MatcherTemplate> templateList = new ArrayList<>();
         for (BiometricIdentifier bioId : bioIds) {
             String templateStr = CaseUtils.getCaseProperty(this, caseIdProp, bioId.getCalloutResponseKey());
-            if (templateStr == null || templateStr.equals("")) {
+            if (templateStr == null || templateStr.isEmpty()) {
                 continue;
             }
 
@@ -95,7 +95,7 @@ public class SearchActivity extends BaseActivity {
             }
         }
 
-        if (templateList.size() > 0) {
+        if (!templateList.isEmpty()) {
             MatcherCommon.Record record = templateViewModel.createRecord(templateList);
             templateViewModel.insertRecord(record, caseIdProp);
         }

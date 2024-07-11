@@ -121,7 +121,7 @@ public class FaceMatchViewModel extends BaseTemplateViewModel {
 
     @Override
     public MatcherCommon.Record createRecord(List<BioCommon.MatcherTemplate> templates) {
-        if (templates.size() > 0) {
+        if (!templates.isEmpty()) {
             return omniMatchUtil.createFaceRecord(templates.get(0));
         }
         return null;

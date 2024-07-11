@@ -203,7 +203,7 @@ public abstract class BaseMatchFragment extends Fragment {
 
     private void handleStartClick() {
         List<String> deniedPermissions = checkPermissions();
-        if (deniedPermissions.size() == 0) {
+        if (deniedPermissions.isEmpty()) {
             handleStartCapture();
         } else {
             boolean allPermissionsDenied = true;

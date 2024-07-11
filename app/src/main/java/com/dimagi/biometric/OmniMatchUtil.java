@@ -38,7 +38,7 @@ public class OmniMatchUtil {
 
     public MatcherCommon.Record createFingerRecord(List<BioCommon.MatcherTemplate> fingerTemplates) {
         MatcherCommon.Record.Builder matcherCommonRecordBuilder = MatcherCommon.Record.newBuilder();
-        if (fingerTemplates != null && fingerTemplates.size() > 0) {
+        if (fingerTemplates != null && !fingerTemplates.isEmpty()) {
             for (BioCommon.MatcherTemplate fingerNNTemplate : fingerTemplates) {
                 matcherCommonRecordBuilder.addNnFingers(fingerNNTemplate);
             }
