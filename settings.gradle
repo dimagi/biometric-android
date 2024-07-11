@@ -14,8 +14,3 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Biometric"
 include ':app'
-include ':AirsnapFaceCore'
-include ':AirsnapFaceUI'
-include ':AirsnapFinger'
-include ':AirsnapFingerUI'
-include ':OmniMatch'
