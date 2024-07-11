@@ -31,3 +31,10 @@ app/google-services.json
 
 # Android Profiling
 *.hprof
+
+# Private aar
+AirsnapFaceCore-release.aar
+AirsnapFaceUI-release.aar
+AirsnapFingerUI-release.aar
+android-wrapper-4.5.1.aar
+T5AirSnap-release.aar

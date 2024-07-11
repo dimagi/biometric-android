@@ -16,6 +16,7 @@ ext {
     GOOGLE_PLAY_MAPS_API_KEY = project.properties['GOOGLE_PLAY_MAPS_API_KEY'] ?: ""
     GOOGLE_SERVICES_API_KEY = project.properties['GOOGLE_SERVICES_API_KEY'] ?: ""
     FIREBASE_DATABASE_URL = project.properties['FIREBASE_DATABASE_URL'] ?: ''
+    TECH5_SDK_DIR = project.properties['TECH5_SDK_DIR'] ?: ''
 }
 
 android {
@@ -98,11 +99,12 @@ dependencies {
     implementation "androidx.camera:camera-lifecycle:$camerax_version"
     implementation "androidx.camera:camera-view:$camerax_version"
 
-    implementation(project(path: ':AirsnapFaceCore'))
-    implementation(project(path: ':AirsnapFaceUI'))
-    implementation(project(path: ':AirsnapFinger'))
-    implementation(project(path: ':AirsnapFingerUI'))
-    implementation(project(path: ':OmniMatch'))
+
+    implementation(files("$project.ext.TECH5_SDK_DIR/AirsnapFaceCore-release.aar"))
+    implementation(files("$project.ext.TECH5_SDK_DIR/AirsnapFaceUI-release.aar"))
+    implementation(files("$project.ext.TECH5_SDK_DIR/T5AirSnap-release.aar"))
+    implementation(files("$project.ext.TECH5_SDK_DIR/AirsnapFingerUI-release.aar"))
+    implementation(files("$project.ext.TECH5_SDK_DIR/android-wrapper-4.5.1.aar"))
 
     implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
     implementation("com.google.firebase:firebase-crashlytics")
