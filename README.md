@@ -33,14 +33,14 @@ To set up an Android dev environment for the biometric app, do the following:
 For the biometric application to work correctly, the necessary Tech5 dependencies will need to be set up first. These dependencies are responsible for the capture UI, creating biometric templates, and matching templates with each other. To set up the Tech5 dependencies:
 
 - Download the Tech5 OmniMatch SDK (link available on 1Password under "Tech5 OmniMatch SDK".
-- From the sample app of the downloaded SDK, copy the following folders to the biometric app project's root directory:
+- Create a folder `app/libs` to store Tech5 `.aar` files
+- In your `local.properties` file define a property `TECH5_SDK_DIR=libs`   
+- From the sample app of the downloaded SDK, copy the .aar files from the following folders to your `app/libs` folder - 
     - AirsnapFaceCore
     - AirsnapFaceUI
     - AirsnapFinger
     - AirsnapFingerUI
     - OmniMatch
-
-The app `build.gradle` and `settings.gradle` files are already set up to add the Tech5 dependencies to the project, so no further action is required after adding the necessary dependency folders.
 
 ## Building
 
