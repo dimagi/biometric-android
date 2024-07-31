@@ -1,5 +1,6 @@
 package com.dimagi.biometric.activities;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -239,17 +240,21 @@ public abstract class BaseActivity extends AppCompatActivity {
         return errorStr.toString();
     }
 
-    private ArrayList<String> validateRequiredParams() {
+    @CallSuper
+    protected ArrayList<String> validateRequiredParams() {
         ArrayList<String> errors = new ArrayList<>();
-        if (caseId == null) {
-            errors.add(getText(R.string.missing_case_id).toString());
-        }
         if (projectId == null) {
             errors.add(getText(R.string.missing_project_id).toString());
         } else if (hasSpaces(projectId)) {
             errors.add(getText(R.string.invalid_project_id).toString());
         }
         return errors;
+    }
+
+    protected void validateMissingCaseId(ArrayList<String> errors) {
+        if (caseId == null) {
+            errors.add(getText(R.string.missing_case_id).toString());
+        }
     }
 
     private boolean hasSpaces(String text) {
