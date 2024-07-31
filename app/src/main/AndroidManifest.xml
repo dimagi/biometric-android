@@ -25,16 +25,15 @@
             android:exported="true"
             android:theme="@style/Theme.Biometric.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
                 <action android:name="com.dimagi.biometric.VERIFY" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name="com.dimagi.biometric.activities.EnrollActivity"
             android:exported="true">
             <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
                 <action android:name="com.dimagi.biometric.ENROLL" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
