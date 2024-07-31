@@ -38,3 +38,7 @@ AirsnapFaceUI-release.aar
 AirsnapFingerUI-release.aar
 android-wrapper-4.5.1.aar
 T5AirSnap-release.aar
+
+ # mac os
+.DS_Store
+

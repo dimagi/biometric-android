@@ -4,6 +4,8 @@ import org.commcare.commcaresupportlibrary.identity.IdentityResponseBuilder;
 import org.commcare.commcaresupportlibrary.identity.model.MatchResult;
 import org.commcare.commcaresupportlibrary.identity.model.MatchStrength;
 
+import java.util.ArrayList;
+
 import Tech5.OmniMatch.MatcherCommon;
 
 public class VerifyActivity extends BaseActivity {
@@ -28,5 +30,12 @@ public class VerifyActivity extends BaseActivity {
         IdentityResponseBuilder.verificationResponse(
                 caseId, new MatchResult(confidencePercentage, matchStrength)
         ).finalizeResponse(this);
+    }
+
+    @Override
+    protected ArrayList<String> validateRequiredParams() {
+        ArrayList<String> errors = super.validateRequiredParams();
+        validateMissingCaseId(errors);
+        return errors;
     }
 }

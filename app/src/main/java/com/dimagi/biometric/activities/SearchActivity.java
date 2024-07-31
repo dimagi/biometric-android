@@ -45,7 +45,6 @@ public class SearchActivity extends BaseActivity {
     @Override
     protected void onCaptureCancelled() {
         ArrayList<IdentificationMatch> identifications = new ArrayList<>();
-        identifications.add(new IdentificationMatch(caseId, new MatchResult(0, MatchStrength.ONE_STAR)));
         IdentityResponseBuilder.identificationResponse(identifications).finalizeResponse(this);
     }
 
